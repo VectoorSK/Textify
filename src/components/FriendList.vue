@@ -18,7 +18,7 @@
               {{ friend.name + ' ' + friend.surname }}
             </v-col>
             <v-col cols="2">
-              {{ friend.pseudo }}
+              {{ friend.username }}
             </v-col>
             <v-col cols="4">
             </v-col>

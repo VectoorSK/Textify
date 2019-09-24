@@ -1,6 +1,13 @@
 <template>
   <div id="friends">
     <h2 class="my-1 primary--text text-center">TEXTIFY</h2>
+    <v-text-field
+      class="mx-5"
+      v-model="user"
+      label="Pseudo"
+    ></v-text-field>
+    <v-btn @click="login(user)">LOGIN</v-btn>
+    {{ user }}
     <!-- CONTAINER -->
     <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
@@ -14,7 +21,7 @@
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
-            <FriendBar v-model="err" :error="err" :userlist="userList['users']" v-on:update-color="updateColor" v-on:add-friend="addFriend"></FriendBar>
+            <FriendBar v-model="err" :error="err" :userlist="userList['users']" :user="user" v-on:update-color="updateColor" v-on:add-friend="addFriend"></FriendBar>
             <!-- <FriendList :friendlist="friendlist" :color="color"></FriendList> -->
             <FriendList v-if="userList" :friendlist="friendList" :color="color" v-on:del-friend="delFriend"></FriendList>
           </v-col>
@@ -33,24 +40,94 @@ export default {
     FriendBar, FriendList
   },
   data: () => ({
+    user: 'Vector',
     userList: [],
-    currentSmiley: '🙂',
     color: 'primary',
     friendList: [],
-    err: ''
+    err: '',
+    url: '' // 'http://localhost:4000'
   }),
   methods: {
+    // Affiche les amis de l'user correspondant
+    async login (user) {
+      const response = await this.axios.post(this.url + '/api/login',
+        {
+          username: user,
+          password: 'pswd'
+        }
+      )
+      console.log('response: ', response.data.friends)
+      if (response.data.friends) {
+        this.friendList = []
+        response.data.friends.forEach(async username => {
+          let { avatar, name, surname } = await this.getFriendInfo(username)
+          this.friendList.push({
+            avatar: avatar,
+            name: name,
+            surname: surname,
+            username: username
+          })
+          this.friendList.sort(this.byPseudo)
+        })
+      }
+    },
+    // Recupere les infos d'un user à partir de son username
+    async getFriendInfo (username) {
+      const response = await this.axios.post(this.url + '/api/getInfo',
+        {
+          username: username
+        }
+      )
+      console.log('response: ', response.data)
+      if (response.data.message === 'found') {
+        return response.data
+      } else {
+        return -1
+      }
+    },
+    // sort by pseudo
+    byPseudo (a, b) {
+      const userA = a.username.toUpperCase()
+      const userB = b.username.toUpperCase()
+
+      let comparison = 0
+      if (userA > userB) {
+        comparison = 1
+      } else if (userA < userB) {
+        comparison = -1
+      }
+      return comparison
+    },
+    // change color
     updateColor (c) {
       this.color = c
     },
-    addFriend (friend) {
-      let found = this.friendList.find(element => element.pseudo === friend.pseudo)
+    // ajoute "friend" à la liste d'ami de "user" et vice versa
+    async addFriend (user, friend) {
+      const fData = await this.getFriendInfo(friend)
+      // Si "friend" existe
+      if (fData !== -1) {
+        const res = await this.axios.post(this.url + '/api/addFriend',
+          {
+            username: user,
+            friend: friend
+          }
+        )
+        if (res.data.error) {
+          this.err = res.data.message
+        } else {
+          this.err = ''
+        }
+      } else { // Sinon
+        this.err = 'Invalid username'
+      }
+      /* let found = this.friendList.find(element => element.pseudo === friend.pseudo)
       if (found === undefined) {
         this.err = ''
         this.friendList.push(friend)
       } else {
         this.err = 'You are already friend with this person'
-      }
+      } */
     },
     delFriend (id) {
       this.friendList.splice(id, 1)
@@ -72,19 +149,7 @@ export default {
       this.loadUserJSON(function (response) {
         // Parse JSON string into object
         self.userList = JSON.parse(response)
-        self.initFrdList()
       })
-    },
-    initFrdList () {
-      for (let pseudo of this.userList['users'][0]['friends']) {
-        console.log(pseudo)
-        let found = this.userList['users'].find(element => element.pseudo === pseudo)
-        if (found === undefined) {
-          console.log("this person doesn't exist")
-        } else {
-          this.friendList.push(found)
-        }
-      }
     }
   },
   computed: {
@@ -95,8 +160,8 @@ export default {
   watch: {
     userList: function () {
       // console.clear()
-      console.log('userlist')
-      console.log(this.userList['users'])
+      // console.log('userlist')
+      // console.log(this.userList['users'])
     }
   }
 }

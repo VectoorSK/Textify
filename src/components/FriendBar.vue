@@ -12,6 +12,7 @@
             </v-btn>
           </template>
           <v-card class="py-2 px-5">
+            {{ user }}
             <v-text-field
               v-model="newFriend"
               label="Pseudo"
@@ -22,7 +23,7 @@
               <v-btn
                 color="success"
                 class="mx-auto mt-2"
-                @click="checkUser"
+                @click="checkUser(newFriend)"
               >
                 <v-icon class="mr-2">person_add</v-icon>
                 ADD
@@ -59,7 +60,8 @@ export default {
   },
   props: {
     userlist: Array,
-    error: String
+    error: String,
+    user: String
   },
   data: () => ({
     color: '#512DA8',
@@ -70,8 +72,10 @@ export default {
     settingMenu: false
   }),
   methods: {
-    checkUser () {
-      let found = false
+    checkUser (friend) {
+      this.$emit('input', '')
+      this.$emit('add-friend', this.user, friend)
+      /* let found = false
       for (let user of this.userlist) {
         if (this.newFriend === user.pseudo) {
           found = true
@@ -83,7 +87,7 @@ export default {
       if (!found) {
         this.$emit('input', 'Invalid pseudo')
         console.warn('pseudo invalide !')
-      }
+      } */
     }
   },
   computed: {
