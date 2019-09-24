@@ -1,0 +1,51 @@
+{
+  "users": [
+    { "avatar": 6,
+      "name": "Victor",
+      "surname": "Belin",
+      "pseudo": "Vector",
+      "friends": ["Aetaugan", "Nanami", "Sima", "Elic"] }
+    ,
+    { "avatar": 16,
+      "name": "Camille",
+      "surname": "Regis",
+      "pseudo": "Aetaugan",
+      "friends": [] }
+    ,
+    { "avatar": 1,
+      "name": "Alexis",
+      "surname": "Cuvillier",
+      "pseudo": "Knokerr",
+      "friends": [] }
+    ,
+    { "avatar": 17,
+      "name": "Marina",
+      "surname": "Kovacic",
+      "pseudo": "Nanami",
+      "friends": [] }
+    ,
+    { "avatar": 7,
+      "name": "Simona",
+      "surname": "Kovacic",
+      "pseudo": "Sima",
+      "friends": [] }
+    ,
+    { "avatar": 47,
+      "name": "Ela",
+      "surname": "Kovacic",
+      "pseudo": "Elic",
+      "friends": [] }
+    ,
+    { "avatar": 43,
+      "name": "Edgar",
+      "surname": "Belin",
+      "pseudo": "Edgar",
+      "friends": [] }
+    ,
+    { "avatar": 19,
+      "name": "Aristide",
+      "surname": "Belin",
+      "pseudo": "Aristide",
+      "friends": [] }
+  ]
+}
