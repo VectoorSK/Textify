@@ -1,13 +1,6 @@
 <template>
   <div id="friends">
-    <h2 class="my-1 primary--text text-center">TEXTIFY</h2>
-    <v-text-field
-      class="mx-5"
-      v-model="user"
-      label="Pseudo"
-    ></v-text-field>
-    <v-btn @click="login(user)">LOGIN</v-btn>
-    {{ user }}
+    <!-- <h2 class="my-1 primary--text text-center">TEXTIFY</h2> -->
     <!-- CONTAINER -->
     <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
@@ -21,13 +14,41 @@
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
-            <FriendBar v-model="err" :error="err" :userlist="userList['users']" :user="user" v-on:update-color="updateColor" v-on:add-friend="addFriend"></FriendBar>
+            <FriendBar
+              v-model="err"
+              :error="err"
+              :userlist="userList['users']"
+              :user="user"
+              v-on:update-color="updateColor"
+              v-on:add-friend="addFriend"
+            ></FriendBar>
             <!-- <FriendList :friendlist="friendlist" :color="color"></FriendList> -->
-            <FriendList v-if="userList" :friendlist="friendList" :color="color" v-on:del-friend="delFriend"></FriendList>
+            <FriendList
+              v-if="userList"
+              :friendlist="friendList"
+              :color="color"
+              v-on:del-friend="delFriend"
+            ></FriendList>
           </v-col>
         </v-row>
       </v-card>
     </v-card>
+    <!--
+    <v-card
+      flat
+      class="mx-auto my-2 pa-2"
+      max-width="55vw"
+      min-width="550"
+      color="blue-grey lighten-4"
+    >
+      <v-text-field
+        class="mx-5"
+        v-model="user"
+        label="Pseudo"
+      ></v-text-field>
+      <v-btn @click="load(user)" class="mx-5">load user</v-btn>
+      {{ userload }}
+    </v-card> -->
   </div>
 </template>
 
@@ -39,25 +60,33 @@ export default {
   components: {
     FriendBar, FriendList
   },
+  mounted: function () {
+    if (!this.$session.exists()) {
+      this.$router.push('/login')
+    }
+  },
   data: () => ({
     user: 'Vector',
     userList: [],
     color: 'primary',
     friendList: [],
     err: '',
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000' // ''
   }),
+  created: function () {
+    this.load(this.userload)
+  },
   methods: {
     // Affiche les amis de l'user correspondant
-    async login (user) {
-      const response = await this.axios.post(this.url + '/api/login',
+    async load (user) {
+      const response = await this.axios.post(this.url + '/api/loadUser',
         {
-          username: user,
-          password: 'pswd'
+          username: user
         }
       )
-      console.log('response: ', response.data.friends)
       if (response.data.friends) {
+        this.userload = user
+        // console.log('response: ', response.data.friends)
         this.friendList = []
         response.data.friends.forEach(async username => {
           let { avatar, name, surname } = await this.getFriendInfo(username)
@@ -78,7 +107,7 @@ export default {
           username: username
         }
       )
-      console.log('response: ', response.data)
+      // console.log('response: ', response.data)
       if (response.data.message === 'found') {
         return response.data
       } else {
@@ -113,6 +142,9 @@ export default {
             friend: friend
           }
         )
+        if (res) {
+          // this.load(this.userload)
+        }
         if (res.data.error) {
           this.err = res.data.message
         } else {
@@ -121,47 +153,28 @@ export default {
       } else { // Sinon
         this.err = 'Invalid username'
       }
-      /* let found = this.friendList.find(element => element.pseudo === friend.pseudo)
-      if (found === undefined) {
-        this.err = ''
-        this.friendList.push(friend)
-      } else {
-        this.err = 'You are already friend with this person'
-      } */
     },
-    delFriend (id) {
-      this.friendList.splice(id, 1)
-    },
-    loadUserJSON (callback) {
-      let xobj = new XMLHttpRequest()
-      xobj.overrideMimeType('application/json')
-      xobj.open('GET', '/users.json', true)
-      xobj.onreadystatechange = function () {
-        if (xobj.readyState === 4 && xobj.status === 200) {
-          // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-          callback(xobj.responseText)
+    async delFriend (friend) {
+      const rep = await this.axios.post(this.url + '/api/delFriend',
+        {
+          username: this.user,
+          friend: friend
         }
+      )
+      if (rep) {
+        this.load(this.userload)
       }
-      xobj.send(null)
-    },
-    initUsers () {
-      let self = this
-      this.loadUserJSON(function (response) {
-        // Parse JSON string into object
-        self.userList = JSON.parse(response)
-      })
+      // this.friendList.splice(id, 1)
     }
   },
   computed: {
-  },
-  mounted () {
-    this.initUsers()
-  },
-  watch: {
-    userList: function () {
-      // console.clear()
-      // console.log('userlist')
-      // console.log(this.userList['users'])
+    userload: {
+      get: function () {
+        return this.$session.get('username')
+      },
+      set: function () {
+        //
+      }
     }
   }
 }

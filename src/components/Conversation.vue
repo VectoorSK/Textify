@@ -8,13 +8,14 @@
     <v-list color="grey lighten-5" class="py-0">
       <v-list-item-group>
         <v-list-item v-for="(mess, id) in conversation" :key="id" justify="center">
+          <v-spacer v-if="mess.sender === user"></v-spacer>
           <!-- icon localisation (gauche) -->
           <v-tooltip
-            :right="!mess.sender && true"
-            :left="mess.sender && true"
+            :right="mess.sender !== user && true"
+            :left="mess.sender === user && true"
           >
             <template v-slot:activator="{ on }">
-              <v-icon small v-if="mess.sender" v-on="mess.type !== 'pos' && on" class="ml-auto mr-1">
+              <v-icon small v-if="mess.sender === user" v-on="mess.type !== 'pos' && on" class="mr-1">
                 {{ mess.from !== '' && mess.type === 'text' ?'mdi-map-marker' : '' }}
               </v-icon>
             </template>
@@ -22,12 +23,12 @@
           </v-tooltip>
           <!-- heure (gauche) -->
           <span
-            v-if="mess.sender && mess.type !== 'smiley'"
+            v-if="mess.sender === user && mess.type !== 'smiley'"
             class="caption grey--text"
             :class="mess.type === 'load' && 'd-none'"
           >
-          {{ ('0' + mess.date.getHours()).slice(-2) + ':'
-            + ('0' + mess.date.getMinutes()).slice(-2) }}
+            {{ getDateHours(mess.date) + ':'
+            +  getDateMins(mess.date) }}
           </span>
           <!-- MESSAGES -->
           <v-scroll-y-transition>
@@ -36,7 +37,7 @@
               v-if="mess.type === 'text'"
               max-width="80%"
               class="my-1 px-3 py-2 justify-center"
-              :class="mess.sender ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
+              :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
               style="border-radius:20px"
               :style="'background-color: ' + color"
             >
@@ -46,7 +47,7 @@
             <v-card
               v-else-if="mess.type === 'pos'"
               class="my-1 px-3 py-2 justify-center"
-              :class="mess.sender ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
+              :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
               style="border-radius:20px"
               :style="'background-color: ' + color"
             >
@@ -55,7 +56,7 @@
                 rounded
                 text
                 :href="mess.content"
-                :dark="mess.sender ? true : false"
+                :dark="mess.sender === user ? true : false"
                 target="_blank"
               >
                 <v-icon small class="mr-2">fa-map-marker-alt</v-icon>
@@ -66,7 +67,7 @@
             <v-progress-circular
               v-else-if="mess.type === 'load'"
               indeterminate
-              :class="mess.sender ? 'ml-auto' : 'mr-auto'"
+              :class="mess.sender === user ? 'ml-auto' : 'mr-auto'"
               :style="'color: ' + color"
             ></v-progress-circular>
             <!-- pictures -->
@@ -74,7 +75,7 @@
               v-else-if="mess.type === 'img'"
               max-width="35%"
               class="my-1 pa-2"
-              :class="mess.sender ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
+              :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
               :style="'background-color: ' + color"
             >
               <v-dialog max-width="70vw" max-height="80vh">
@@ -89,26 +90,26 @@
               </v-dialog>
             </v-card>
             <!-- big smiley -->
-            <div v-else-if="mess.type === 'smiley'" :class="mess.sender ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
+            <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
           </v-scroll-y-transition>
           <!-- heure (droite) -->
           <span
-            v-if="!mess.sender && mess.type !== 'smiley'"
+            v-if="mess.sender !== user && mess.type !== 'smiley'"
             class="caption grey--text"
             :class="mess.type === 'load' && 'd-none'"
           >
-            {{ ('0' + mess.date.getHours()).slice(-2) + ':'
-            + ('0' + mess.date.getMinutes()).slice(-2) }}
+            {{ getDateHours(mess.date) + ':'
+            +  getDateMins(mess.date) }}
           </span>
           <!-- icon localisation (droite) -->
           <v-tooltip
-            :right="!mess.sender && true"
-            :left="mess.sender && true"
+            :right="mess.sender !== user && true"
+            :left="mess.sender === user && true"
             v-if="mess.type === 'text'"
           >
             <template v-slot:activator="{ on }">
-              <v-icon small v-if="!mess.sender" v-on="on" class="mr-auto ml-1">
-                {{ mess.from !== '' ?'mdi-map-marker' : '' }}
+              <v-icon small v-if="mess.sender !== user" v-on="on" class="ml-1">
+                {{ mess.from !== '' ? 'mdi-map-marker' : '' }}
               </v-icon>
             </template>
             <span>{{ mess.from }}</span>
@@ -123,11 +124,20 @@
 export default {
   props: {
     conversation: Array,
+    user: String,
     color: String
   },
   data: () => ({
   }),
   methods: {
+    getDateHours (str) {
+      let date = new Date(str)
+      return ('0' + date.getHours()).slice(-2)
+    },
+    getDateMins (str) {
+      let date = new Date(str)
+      return ('0' + date.getMinutes()).slice(-2)
+    },
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight
     }

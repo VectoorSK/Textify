@@ -1,21 +1,21 @@
 <template>
   <nav>
     <v-app-bar app elevate-on-scroll class="grey lighten-4">
-      <v-app-bar-nav-icon class="black--text" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon class="black--text" v-if="logged" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
       <v-expand-x-transition>
         <v-toolbar-title class="headline text-uppercase font-weight-bold" v-if="!navDrawer">
-          <span>belin</span>
-          <span class="font-weight-light">victor</span>
+          <span>{{ $session.get('surname') }}</span>
+          <span class="font-weight-light">{{ $session.get('name') }}</span>
         </v-toolbar-title>
       </v-expand-x-transition>
       <v-spacer></v-spacer>
-      <v-btn text href="" target="_blank">
-        <span class="mr-2">Log In</span>
-        <v-icon>exit_to_app</v-icon>
+      <v-btn text @click="log" router to="/login">
+        <v-icon small class="mr-1">{{ logged ? 'fa-sign-out-alt' : 'fa-sign-in-alt' }}</v-icon> <!-- exit_to_app -->
+        <span>{{ logged ? 'Log Out' : 'Log In' }}</span>
       </v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer app v-model="navDrawer" class="primary">
+    <v-navigation-drawer app v-model="navDrawer" v-if="logged" class="primary">
       <v-col align="center">
         <v-dialog width="60vw" v-model="dialog">
           <template v-slot:activator="{ on }">
@@ -37,8 +37,8 @@
           </v-card>
         </v-dialog>
         <v-toolbar-title class="headline text-uppercase font-weight-bold white--text mt-2">
-          <span class="font-weight-light">Victor </span>
-          <span>belin</span>
+          <span class="font-weight-light">{{ $session.get('name') }}</span>
+          <span>{{ ' ' + this.$session.get('surname') }}</span>
         </v-toolbar-title>
       </v-col>
       <v-list dark>
@@ -60,25 +60,67 @@
 
 <script>
 export default {
+  mounted: function () {
+    if (this.$session.exists()) {
+      this.logged = true
+      this.usrLogged.avatar = this.$session.get('avatar')
+      this.usrLogged.name = this.$session.get('name')
+      this.usrLogged.surname = this.$session.get('surname')
+      this.avatar = this.$session.get('avatar')
+    } else {
+      this.logged = false
+    }
+  },
   data: () => ({
+    logged: false,
+    usrLogged: {
+      avatar: 0,
+      name: '',
+      surname: ''
+    },
+    url: 'http://localhost:4000',
     navDrawer: false,
     links: [
-      { icon: 'dashboard', text: 'Dashboard', route: '/' },
+      { icon: 'person', text: 'Profile', route: '/profile' },
       { icon: 'people_alt', text: 'Friends', route: '/friends' },
-      { icon: 'comment', text: 'Messages', route: '/textify' }
+      { icon: 'comment', text: 'Messages', route: '/textify/null' }
     ],
-    avatar: 6,
-    dialog: false
+    dialog: false,
+    avatar: 1
   }),
   methods: {
-    changeAvatar (i) {
-      this.avatar = i
+    async changeAvatar (i) {
+      const res = await this.axios.post(this.url + '/api/changeAvatar', {
+        username: this.$session.get('username'),
+        avatar: i
+      })
+      if (res.data.status === 1) {
+        this.$session.set('avatar', i)
+        this.avatar = this.$session.get('avatar')
+        console.log(res.data.message)
+      } else {
+        console.log(res.data.message)
+      }
       this.dialog = false
+    },
+    log () {
+      if (this.logged) {
+        this.$session.clear()
+        this.$session.destroy()
+      }
+      // this.$forceUpdate()
+      this.$router.push('/login')
+      location.reload()
     }
   },
   computed: {
     path: function () {
       return require('../../public/avatars/' + this.avatar + '.png')
+    }
+  },
+  watch: {
+    $session: function () {
+      console.log('CHANGED!!!')
     }
   }
 }

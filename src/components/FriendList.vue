@@ -7,7 +7,7 @@
   >
     <v-list color="grey lighten-5" class="py-0">
       <v-list-item-group>
-        <v-list-item v-for="(friend, id) in friendlist" :key="id" justify="center">
+        <v-list-item v-for="(friend, id) in friendlist" :key="id" justify="center" router :to="'/textify/' + friend.username">
           <v-row align="center">
             <v-col cols="2">
               <v-avatar>
@@ -17,13 +17,13 @@
             <v-col cols="3">
               {{ friend.name + ' ' + friend.surname }}
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               {{ friend.username }}
             </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
             </v-col>
             <v-col cols="1">
-              <v-btn icon small @click="delFriend(id)">
+              <v-btn icon small @click="delFriend(friend.username)">
                 <v-icon color="red">clear</v-icon>
               </v-btn>
             </v-col>
@@ -46,8 +46,8 @@ export default {
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight
     },
-    delFriend (id) {
-      this.$emit('del-friend', id)
+    delFriend (username) {
+      this.$emit('del-friend', username)
     }
   },
   watch: {

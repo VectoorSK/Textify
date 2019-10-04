@@ -1,0 +1,239 @@
+<template>
+  <div id="login">
+    <v-card class="mx-auto mt-10" max-width="55vw" min-width="560">
+      <v-tabs dark centered grow background-color="primary">
+        <v-tab :href="`#tab-Login`">Login</v-tab>
+        <v-tab :href="`#tab-Register`">Register</v-tab>
+        <v-tab-item :value="'tab-Login'">
+          <v-card-text>
+            <v-form v-model="valid">
+              <v-text-field
+                label="Username"
+                name="username"
+                prepend-icon="person"
+                type="text"
+                v-model="username"
+                :rules="UsernameRules"
+              ></v-text-field>
+
+              <v-text-field
+                id="password"
+                label="Password"
+                name="password"
+                prepend-icon="lock"
+                :append-icon="show1 ? 'visibility' : 'visibility_off'"
+                :type="show1 ? 'text' : 'password'"
+                @click:append="show1 = !show1"
+                hint="At least 8 characters"
+                counter
+                v-model="password"
+                :rules="PassRules"
+              ></v-text-field>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              :disabled="!valid"
+              color="success"
+              class="mr-4"
+              @click="login"
+            >Login</v-btn>
+            <v-chip disabled>{{ error }}</v-chip>
+          </v-card-actions>
+        </v-tab-item>
+        <v-tab-item :value="'tab-Register'">
+          <v-card-text>
+            <v-form v-model="valid">
+              <v-text-field
+                label="Username"
+                name="regUsername"
+                prepend-icon="person"
+                type="text"
+                v-model="username"
+                :rules="regUsernameRules"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="email"
+                :rules="emailRules"
+                label="E-mail"
+                prepend-icon="fa-at"
+                required
+              ></v-text-field>
+              <v-text-field
+                id="regPassword"
+                label="Password"
+                name="regPassword"
+                prepend-icon="lock"
+                type="password"
+                v-model="regPassword"
+                :rules="regPasswordRules"
+                required
+              ></v-text-field>
+              <v-text-field
+                id="regConfPassword"
+                label="Confirm Password"
+                name="regConfPassword"
+                prepend-icon="lock"
+                type="password"
+                v-model="regConfPassword"
+                :rules="regConfPassRules"
+                required
+              ></v-text-field>
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                full-width
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="date"
+                    label="Birthday date"
+                    prepend-icon="event"
+                    readonly
+                    v-on="on"
+                  :rules="dateRules"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  ref="picker"
+                  v-model="date"
+                  :max="new Date().toISOString().substr(0, 10)"
+                  min="1950-01-01"
+                  @change="save"
+                ></v-date-picker>
+              </v-menu>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+            type='submit'
+              :disabled="!valid"
+              color="success"
+              class="mr-4"
+              v-if="regPassword === regConfPassword"
+              @click="submit"
+            >Register</v-btn>
+            <v-btn disabled v-else>Passwords Doesn't match</v-btn>
+            <v-chip disabled>{{ errorReg }}</v-chip>
+
+          </v-card-actions>
+          <v-card></v-card>
+        </v-tab-item>
+      </v-tabs>
+    </v-card>
+  </div>
+</template>
+
+<script>
+export default {
+  data: () => ({
+    url: 'http://localhost:4000',
+    show1: true,
+    valid: false,
+    error: '',
+    errorReg: '',
+    username: '',
+    password: 'Password123',
+    UserList: [],
+    UsernameRules: [v => !!v || 'Missing Username'],
+    PassRules: [v => !!v || 'Missing Password'],
+    regUsername: '',
+    regUsernameRules: [
+      v => !!v || 'Username is required',
+      v => (v && v.length <= 10) || 'Username must be less than 10 characters',
+      v => (v && v.length >= 4) || 'Username must be more than 4 characters',
+      v =>
+        /^[a-zA-Z0-9]*$/.test(v) ||
+        'Username must contain only letters or numbers'
+    ],
+    regPassword: '',
+    regPasswordRules: [
+      v => !!v || 'Password is required',
+      v => (v && v.length >= 4) || 'Password must be more than 4 characters',
+      v =>
+        /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/.test(v) ||
+        'Password must contain at least one capital and one lowercase and one number '
+    ],
+    regConfPassword: '',
+    regConfPassRules: [v => !!v || 'Confirmation Password is required'],
+    email: '',
+    emailRules: [
+      v => !!v || 'E-mail is required',
+      // eslint-disable-next-line no-useless-escape
+      v => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid'
+    ],
+    date: null,
+    dateRules: [
+      v => !!v || 'Birthday is required'
+    ],
+    menu: false
+  }),
+  watch: {
+    menu (val) {
+      val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
+    }
+  },
+  methods: {
+    save (date) {
+      this.$refs.menu.save(date)
+    },
+    submit () {
+      console.log(this.username)
+      console.log(this.regPassword)
+      // Delete localhost:4000 for prod
+      this.axios.post(this.url + '/api/addUser', {
+        avatar: null,
+        name: '',
+        surname: '',
+        username: this.username,
+        password: this.regPassword,
+        friends: [],
+        email: this.email,
+        date: this.date,
+        description: ''
+      })
+        .then((response) => {
+          console.log('Registered !')
+        })
+        .catch((error) => {
+          this.errorReg = error.response.data.error
+          console.log('response', JSON.stringify(error.response))
+        })
+    },
+    async login () {
+      console.log(this.username)
+      console.log(this.password)
+      // try {
+      const res = await this.axios.post(this.url + '/api/login', {
+        username: this.username,
+        password: this.password
+      })
+      if (res) {
+        console.log(res.data)
+        this.$session.start()
+        this.$session.set('name', res.data.user.name)
+        this.$session.set('surname', res.data.user.surname)
+        this.$session.set('username', res.data.user.username)
+        this.$session.set('avatar', res.data.user.avatar)
+        this.$session.set('email', res.data.user.email)
+        this.$session.set('birthday', res.data.user.date)
+        this.$session.set('description', res.data.user.description)
+        this.$session.set('friends', res.data.user.friends)
+
+        console.log('Logged !')
+        this.$router.push('/profile')
+        // location.reload()
+      }
+      // } catch (error) {
+      // this.error = error.response.data.message
+      // console.log('response', JSON.stringify(error.response))
+      // }
+    }
+  }
+}
+</script>

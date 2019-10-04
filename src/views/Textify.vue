@@ -14,8 +14,8 @@
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
-            <SettingBar v-model="currentSmiley" v-on:update-color="updateColor"></SettingBar>
-            <Conversation :conversation="conversation" :color="color"></Conversation>
+            <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" v-on:update-color="updateColor"></SettingBar>
+            <Conversation :conversation="conversation" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
         <v-row align="center" class="my-0 mx-2 pa-0">
@@ -51,18 +51,24 @@
               @click="showSmiley = !showSmiley"
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
+              @keyup.enter="sendMessage"
               @click:clear="clearMessage"
               :color="color"
             ></v-text-field>
             <!-- input file -->
-            <v-file-input
+            <!-- <v-file-input
               v-else
-              v-model="img"
+              v-model="file"
               accept="image/*"
               label="Send picture"
               append-outer-icon="send"
-              @click:append-outer="sendIMG"
-            ></v-file-input>
+              @click="handleFileUpload"
+              @click:append-outer="submitFile"
+            ></v-file-input> -->
+            <div v-else>
+              <input type="file" id="file" ref="file" v-on:change="handleFileUpload"/>
+              <v-btn v-on:click="sendIMG">Submit</v-btn>
+            </div>
           </v-col>
           <!-- send smiley button -->
           <v-col cols="1" class="ma-0 pa-0">
@@ -73,26 +79,30 @@
         </v-row>
       </v-card>
     </v-card>
-    <!-- second text input -->
-    <v-card
-      class="mx-auto my-4 px-5 overflow-hidden"
-      height="75"
-      max-width="50vw"
-      min-width="400"
-      color="deep-purple lighten-4"
+    <!-- TEST FILE -->
+    <v-card>
+      {{ file }}
+    </v-card>
+    <!-- <v-card
+      flat
+      class="mx-auto my-2 pa-2"
+      max-width="55vw"
+      min-width="550"
+      color="blue-grey lighten-4"
     >
       <v-text-field
         class="mx-5"
-        v-model="message2"
-        :append-icon="marker ? 'mdi-map-marker' : 'mdi-map-marker-off'"
-        :append-outer-icon="message2 ? 'mdi-send' : 'mdi-microphone'"
-        prepend-icon="mdi-emoticon"
-        clearable
-        label="Message"
-        type="text"
-        @click:append-outer="sendMessage2"
+        v-model="from"
+        label="User"
       ></v-text-field>
-    </v-card>
+      <v-text-field
+        class="mx-5"
+        v-model="to"
+        label="Friend"
+      ></v-text-field>
+      <v-btn @click="loadConv" class="mx-5">load conversation</v-btn>
+      {{ 'To: ' + to + ' / user: ' + user }}
+    </v-card> -->
   </div>
 </template>
 
@@ -103,11 +113,33 @@ import SettingBar from '../components/SettingBar'
 
 export default {
   components: { EmojiTab, Conversation, SettingBar },
+  mounted: function () {
+    if (this.$session.exists()) {
+      this.user = this.$session.get('username')
+      this.userFriends = this.$session.get('friends')
+      if (this.$route.params.username !== 'null') {
+        this.to = this.$route.params.username
+        this.loadConv()
+      } else {
+        this.to = ''
+      }
+      console.log('nogoto')
+    } else {
+      console.log('goto')
+      this.$router.push({ name: 'login' })
+    }
+  },
   data: () => ({
+    user: '',
+    to: 'Nanami',
+    userFriends: [],
+    friendLoad: null,
+    url: 'http://localhost:4000', // ''
     inputType: 'text',
     message: '',
     message2: '',
-    img: undefined,
+    file: undefined,
+    img: null,
     dialog: false,
     currentSmiley: '🙂',
     smiley: '',
@@ -117,60 +149,72 @@ export default {
     longitude: null,
     town: '',
     color: '#512DA8',
-    conversation: [
-      { type: 'text',
-        content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
-        sender: true,
-        from: 'Paris - 75001 (France)',
-        date: new Date() },
-      { type: 'text',
-        content: 'Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
-        sender: false,
-        from: 'Varazdin - 42000 (Hrvatska)',
-        date: new Date() },
-      { type: 'text',
-        content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-        sender: true,
-        from: 'Paris - 75001 (France)',
-        date: new Date() },
-      { type: 'text',
-        content: 'blablablabla',
-        sender: true,
-        from: 'Paris - 75001 (France)',
-        date: new Date() },
-      { type: 'text',
-        content: 'blablablablablablablabla',
-        sender: false,
-        from: 'Varazdin - 42000 (Hrvatska)',
-        date: new Date() }
-    ]
+    conversation: []
   }),
   methods: {
+    async loadConv () {
+      const res = await this.axios.post(this.url + '/api/getConv',
+        {
+          from: this.user,
+          to: this.to
+        }
+      )
+      if (res.data.status === 1) {
+        console.log('FOUND')
+        console.log(res)
+        this.conversation = res.data.content
+        this.friendLoad = res.data.To
+      } else if (res.data.status === 0) {
+        console.log('NOT FOUND')
+        this.conversation = []
+        this.friendLoad = res.data.To
+      } else {
+        console.log('NO SUCH USER')
+        this.conversation = []
+        this.friendLoad = null
+      }
+    },
     updateColor (c) {
       this.color = c
+    },
+    async send (message) {
+      const res = await this.axios.post(this.url + '/api/sendMess',
+        {
+          from: this.user,
+          to: this.to,
+          message: message
+        }
+      )
+      if (res) {
+        console.log(res.data.message)
+      }
     },
     sendMessage () {
       let from = this.marker ? this.town : ''
       if (this.message !== '') {
-        this.conversation.push({
+        let message = {
           type: 'text',
           content: this.message,
-          sender: true,
+          sender: this.user,
           from: from,
           date: new Date()
-        })
+        }
+        this.conversation.push(message)
+        this.send(message)
         this.clearMessage()
       }
     },
     sendMessage2 () {
       if (this.message2 !== '') {
-        this.conversation.push({
+        let message = {
           type: 'text',
           content: this.message2,
-          sender: false,
+          sender: this.to,
           from: 'Varazdin - Hrvatska',
           date: new Date()
-        })
+        }
+        this.conversation.push(message)
+        this.send(message)
         this.clearMessage2()
       }
     },
@@ -180,21 +224,54 @@ export default {
     clearMessage2 () {
       this.message2 = ''
     },
+    submitFile () {
+      let formData = new FormData()
+      formData.append('file', this.file, 'file')
+      console.log(formData)
+
+      this.axios.post(this.url + '/api/upload-file',
+        {
+          formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(function () {
+          console.log('SUCCESS!!')
+        })
+        .catch(function () {
+          console.log('FAILURE!!')
+        })
+    },
+    handleFileUpload () {
+      console.log(this.$refs.file.files)
+      this.file = this.$refs.file.files[0]
+      console.log(this.file)
+    },
     sendIMG () {
-      this.conversation.push({
+      // const client = require('filestack-js').init('AIC8o333S52FzCIfpPKB4z')
+      // client.picker().open()
+
+      let image = {
         type: 'img',
         content: this.img,
-        sender: true,
+        sender: this.user,
+        from: '',
         date: new Date()
-      })
+      }
+      this.conversation.push(image)
+      this.send(image)
     },
     sendSmiley () {
-      this.conversation.push({
+      let smiley = {
         type: 'smiley',
         content: this.currentSmiley,
-        sender: true,
+        sender: this.user,
+        from: '',
         date: new Date()
-      })
+      }
+      this.conversation.push(smiley)
+      this.send(smiley)
     },
     sendPos () {
       var options = {
@@ -203,12 +280,15 @@ export default {
         maximumAge: 0
       }
 
-      this.conversation.push({
+      let load = {
         type: 'load',
         content: '',
-        sender: true,
+        sender: this.user,
+        from: '',
         date: new Date()
-      })
+      }
+      this.conversation.push(load)
+      this.send(load)
 
       navigator.geolocation.getCurrentPosition(success, error, options)
       var self = this
@@ -233,12 +313,14 @@ export default {
           }
         }
 
-        self.conversation.splice(id, 0, {
+        let posMess = {
           type: 'pos',
           content: self.posLink,
-          sender: true,
+          sender: self.user,
           date: new Date()
-        })
+        }
+        self.conversation.splice(id, 0, posMess)
+        self.send(posMess)
       }
 
       function error (err) {
@@ -326,31 +408,12 @@ export default {
     },
     jsonLink: function () {
       return 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + this.latitude + '&lon=' + this.longitude + '&zoom=18&addressdetails=1'
+    },
+    friendPic: function () {
+      return 10
     }
   }
 }
-
-/* codeLatLng(lat, lng)
-
-var geocoder = new google.maps.Geocoder()
-
-function codeLatLng (lat, lng) {
-  var latlng = new google.maps.LatLng(lat, lng)
-  geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      console.log(results)
-      if (results[1]) {
-        // formatted address
-        var address = results[0].formatted_address
-        alert('address = ' + address)
-      } else {
-        alert('No results found')
-      }
-    } else {
-      alert('Geocoder failed due to: ' + status)
-    }
-  })
-} */
 </script>
 
 <style scoped>
