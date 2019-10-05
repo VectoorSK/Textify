@@ -29,7 +29,7 @@ const users = [
     surname: 'Belin',
     username: 'Vector',
     password: 'Password123',
-    friends: ['Aetaugan', 'Knokerr', 'Nanami', 'Sima', 'Elic', 'Aristide', 'Edgar'],
+    friends: ['Aetaugan', 'Knokerr', 'Nanami', 'Sima', 'Elic', 'Ari', 'Edgar'],
     email: 'belin@et.esiea.fr',
     date: '13/11/1997',
     description: 'Pure BG'
@@ -95,7 +95,7 @@ const users = [
     surname: 'Belin',
     username: 'Edgar',
     password: 'Password123',
-    friends: ['Vector', 'Aristide'],
+    friends: ['Vector', 'Ari'],
     email: 'abelin@gmail.com',
     date: '01/09/2003',
     description: ''
@@ -104,7 +104,7 @@ const users = [
     avatar: 19,
     name: 'Aristide',
     surname: 'Belin',
-    username: 'Aristide',
+    username: 'Ari',
     password: 'Password123',
     friends: ['Vector', 'Edgar'],
     email: 'ebelin@gmail.com',
@@ -239,6 +239,9 @@ app.post('/api/addFriend', (req, res) => {
           const already = user.friends.find(u => u === friend)
           if (!already) {
             user.friends.push(friend)
+            res.json({
+              message: friend + ' has been added to your friendlist'
+            })
           } else {
             res.json({
               error: 'already_friend',
@@ -291,6 +294,22 @@ app.post('/api/delFriend', (req, res) => {
       message: 'Amis supprimés correctement'
     })
   }
+})
+
+app.post('/api/getConvList', (req, res) => {
+  const username = req.body.username
+  const convList = []
+  const convs = conversations.filter(c => (c.from === username || c.to === username))
+
+  if (convs) {
+    for (const conv of convs) {
+      const item = conv.from === username ? conv.to : conv.from
+      convList.push(item)
+    }
+  }
+  res.json({
+    convList: convList
+  })
 })
 
 app.post('/api/changeAvatar', (req, res) => {

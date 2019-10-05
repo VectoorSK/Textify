@@ -117,21 +117,15 @@ export default {
     if (this.$session.exists()) {
       this.user = this.$session.get('username')
       this.userFriends = this.$session.get('friends')
-      if (this.$route.params.username !== 'null') {
-        this.to = this.$route.params.username
-        this.loadConv()
-      } else {
-        this.to = ''
-      }
-      console.log('nogoto')
+      this.to = this.$route.params.username
+      this.loadConv()
     } else {
-      console.log('goto')
       this.$router.push({ name: 'login' })
     }
   },
   data: () => ({
     user: '',
-    to: 'Nanami',
+    to: '',
     userFriends: [],
     friendLoad: null,
     url: 'http://localhost:4000', // ''
@@ -411,6 +405,16 @@ export default {
     },
     friendPic: function () {
       return 10
+    }
+  },
+  watch: {
+    '$route': function (to, from) {
+      if (this.$route.params.username !== 'null') {
+        this.to = this.$route.params.username
+      } else {
+        this.to = ''
+      }
+      this.loadConv()
     }
   }
 }

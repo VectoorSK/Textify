@@ -2,7 +2,7 @@
   <v-card
     flat
     class="overflow-y-auto"
-    height="58vh"
+    height="60vh"
     ref="mylist"
   >
     <v-list color="grey lighten-5" class="py-0">

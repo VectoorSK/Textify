@@ -9,15 +9,9 @@
         v-if="friend === null"
         v-model="to"
         :items="friendlist"
-        label="Friend"
+        @change="selectFriend"
+        label="Select a friend"
       ></v-select>
-      <v-btn
-        v-if="friend === null && to !== ''"
-        small
-        depressed
-        class="ml-2"
-        @click="selectFriend"
-      >Select</v-btn> <!-- router :to="'/textify/' + to" -->
       <span>{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
       <v-spacer></v-spacer>
       <!-- CHANGE COLOR MENU -->
@@ -53,11 +47,10 @@ export default {
     ColorPicker, SettingList
   },
   props: {
-    friendlist: Object,
+    friendlist: Array,
     friend: Object
   },
   data: () => ({
-    items: ['Vector', 'Bar', 'Fizz', 'Buzz'],
     to: '',
     currentSmiley: '🙂',
     color: '#512DA8',
@@ -67,8 +60,8 @@ export default {
   }),
   methods: {
     selectFriend () {
-      this.$router.push(this.to)
-      location.reload()
+      this.$router.push({ path: this.to })
+      // location.reload()
     }
   },
   computed: {

@@ -16,13 +16,13 @@
             <!-- FENETRE DE CONVERSATION -->
             <FriendBar
               v-model="err"
+              :open="open"
               :error="err"
               :userlist="userList['users']"
-              :user="user"
+              :user="userload"
               v-on:update-color="updateColor"
               v-on:add-friend="addFriend"
             ></FriendBar>
-            <!-- <FriendList :friendlist="friendlist" :color="color"></FriendList> -->
             <FriendList
               v-if="userList"
               :friendlist="friendList"
@@ -64,18 +64,16 @@ export default {
     if (!this.$session.exists()) {
       this.$router.push('/login')
     }
+    this.load(this.userload)
   },
   data: () => ({
-    user: 'Vector',
     userList: [],
     color: 'primary',
     friendList: [],
     err: '',
+    open: false,
     url: 'http://localhost:4000' // ''
   }),
-  created: function () {
-    this.load(this.userload)
-  },
   methods: {
     // Affiche les amis de l'user correspondant
     async load (user) {
@@ -86,7 +84,6 @@ export default {
       )
       if (response.data.friends) {
         this.userload = user
-        // console.log('response: ', response.data.friends)
         this.friendList = []
         response.data.friends.forEach(async username => {
           let { avatar, name, surname } = await this.getFriendInfo(username)
@@ -94,10 +91,12 @@ export default {
             avatar: avatar,
             name: name,
             surname: surname,
-            username: username
+            username: username,
+            isConv: false
           })
           this.friendList.sort(this.byPseudo)
         })
+        this.getConvList(this.userload)
       }
     },
     // Recupere les infos d'un user à partir de son username
@@ -107,11 +106,24 @@ export default {
           username: username
         }
       )
-      // console.log('response: ', response.data)
       if (response.data.message === 'found') {
         return response.data
       } else {
         return -1
+      }
+    },
+    // Recupere la liste des amis avec une conversation existante et update 'isConv dans friendList[]
+    async getConvList (username) {
+      const response = await this.axios.post(this.url + '/api/getConvList',
+        {
+          username: username
+        }
+      )
+      if (response) {
+        for (const friend of this.friendList) {
+          const isConv = response.data.convList.find(u => u === friend.username)
+          friend.isConv = !!isConv
+        }
       }
     },
     // sort by pseudo
@@ -143,7 +155,8 @@ export default {
           }
         )
         if (res) {
-          // this.load(this.userload)
+          this.load(this.userload)
+          this.open = !this.open
         }
         if (res.data.error) {
           this.err = res.data.message
@@ -157,7 +170,7 @@ export default {
     async delFriend (friend) {
       const rep = await this.axios.post(this.url + '/api/delFriend',
         {
-          username: this.user,
+          username: this.userload,
           friend: friend
         }
       )

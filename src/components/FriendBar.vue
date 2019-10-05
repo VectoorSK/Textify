@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="blue-grey lighten-4" class="mb-2">
     <v-row class="mx-0" justify="space-between" align="center">
-      <v-dialog width="33vw">
+      <v-dialog width="33vw" v-model="dialog">
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on">
             <v-icon>add_circle</v-icon>
@@ -51,7 +51,8 @@ export default {
   props: {
     userlist: Array,
     error: String,
-    user: String
+    user: String,
+    open: Boolean
   },
   data: () => ({
     color: '#512DA8',
@@ -66,6 +67,15 @@ export default {
     }
   },
   computed: {
+    /* dialog: {
+      get: function () {
+        console.log(this.open)
+        return this.open
+      },
+      set: function () {
+        // this.dialog = this.dialog === false && true
+      }
+    } */
   },
   watch: {
     color: function () {

@@ -2,12 +2,12 @@
   <v-card
     flat
     class="overflow-y-auto"
-    height="65vh"
+    height="70vh"
     ref="mylist"
   >
     <v-list color="grey lighten-5" class="py-0">
       <v-list-item-group>
-        <v-list-item v-for="(friend, id) in friendlist" :key="id" justify="center" router :to="'/textify/' + friend.username">
+        <v-list-item v-for="(friend, id) in friendlist" :key="id" justify="center">
           <v-row align="center">
             <v-col cols="2">
               <v-avatar>
@@ -20,7 +20,12 @@
             <v-col cols="3">
               {{ friend.username }}
             </v-col>
-            <v-col cols="3">
+            <v-col cols="2">
+            </v-col>
+            <v-col cols="1">
+              <v-btn icon small @click="goToTextify(friend.username)">
+                <v-icon :color="friend.isConv && 'primary'" small>fa-comments</v-icon>
+              </v-btn>
             </v-col>
             <v-col cols="1">
               <v-btn icon small @click="delFriend(friend.username)">
@@ -45,6 +50,9 @@ export default {
   methods: {
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight
+    },
+    goToTextify (username) {
+      this.$router.push('/textify/' + username)
     },
     delFriend (username) {
       this.$emit('del-friend', username)

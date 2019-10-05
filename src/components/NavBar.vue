@@ -4,8 +4,8 @@
       <v-app-bar-nav-icon class="black--text" v-if="logged" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
       <v-expand-x-transition>
         <v-toolbar-title class="headline text-uppercase font-weight-bold" v-if="!navDrawer">
-          <span>{{ $session.get('surname') }}</span>
-          <span class="font-weight-light">{{ $session.get('name') }}</span>
+          <span>{{ usrLogged.surname }}</span>
+          <span class="font-weight-light">{{ usrLogged.name }}</span>
         </v-toolbar-title>
       </v-expand-x-transition>
       <v-spacer></v-spacer>
@@ -37,8 +37,8 @@
           </v-card>
         </v-dialog>
         <v-toolbar-title class="headline text-uppercase font-weight-bold white--text mt-2">
-          <span class="font-weight-light">{{ $session.get('name') }}</span>
-          <span>{{ ' ' + this.$session.get('surname') }}</span>
+          <span class="font-weight-light">{{ usrLogged.name }}</span>
+          <span>{{ ' ' + usrLogged.surname }}</span>
         </v-toolbar-title>
       </v-col>
       <v-list dark>
@@ -60,17 +60,6 @@
 
 <script>
 export default {
-  mounted: function () {
-    if (this.$session.exists()) {
-      this.logged = true
-      this.usrLogged.avatar = this.$session.get('avatar')
-      this.usrLogged.name = this.$session.get('name')
-      this.usrLogged.surname = this.$session.get('surname')
-      this.avatar = this.$session.get('avatar')
-    } else {
-      this.logged = false
-    }
-  },
   data: () => ({
     logged: false,
     usrLogged: {
@@ -96,7 +85,7 @@ export default {
       })
       if (res.data.status === 1) {
         this.$session.set('avatar', i)
-        this.avatar = this.$session.get('avatar')
+        this.usrLogged.avatar = this.$session.get('avatar')
         console.log(res.data.message)
       } else {
         console.log(res.data.message)
@@ -107,20 +96,43 @@ export default {
       if (this.logged) {
         this.$session.clear()
         this.$session.destroy()
+        this.usrLogged.avatar = 0
+        this.usrLogged.name = ''
+        this.usrLogged.surname = ''
+        this.logged = false
       }
       // this.$forceUpdate()
-      this.$router.push('/login')
-      location.reload()
+      this.$router.push({ name: 'login' })
+      // location.reload()
     }
   },
   computed: {
     path: function () {
-      return require('../../public/avatars/' + this.avatar + '.png')
+      return require('../../public/avatars/' + this.usrLogged.avatar + '.png')
+    }
+  },
+  mounted () {
+    if (this.$session.exists()) {
+      this.logged = true
+      this.usrLogged.avatar = this.$session.get('avatar')
+      this.usrLogged.name = this.$session.get('name')
+      this.usrLogged.surname = this.$session.get('surname')
+      this.avatar = this.$session.get('avatar')
+    } else {
+      this.logged = false
     }
   },
   watch: {
-    $session: function () {
-      console.log('CHANGED!!!')
+    '$route': function (to, from) {
+      if (this.$session.exists()) {
+        this.logged = true
+        this.usrLogged.avatar = this.$session.get('avatar')
+        this.usrLogged.name = this.$session.get('name')
+        this.usrLogged.surname = this.$session.get('surname')
+        this.avatar = this.$session.get('avatar')
+      } else {
+        this.logged = false
+      }
     }
   }
 }
