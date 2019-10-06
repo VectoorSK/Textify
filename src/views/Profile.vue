@@ -4,7 +4,7 @@
       <v-img
         class="white--text"
         height="200px"
-        src="../../public/backgrounds/1.jpg"
+        :src="require('../../public/backgrounds/' + background + '.png')"
       >
         <v-row
           align="start"
@@ -39,7 +39,8 @@
       </v-img>
       <v-card-text>
         <span class="text--primary">
-          <span>{{ this.$session.get('description') }}</span>
+          <span v-if="setting === false">{{ this.$session.get('description') }}</span>
+          <Settings v-else v-model="setting" :desc="description" v-on:update="update"></Settings>
         </span>
       </v-card-text>
     </v-card>
@@ -47,11 +48,17 @@
 </template>
 
 <script>
+import Settings from './Settings'
+
 export default {
-  pageTitle: 'My Profile',
+  components: {
+    Settings
+  },
   mounted: function () {
     if (this.$session.exists()) {
       this.avatar = this.$session.get('avatar')
+      this.background = this.$session.get('background')
+      this.description = this.$session.get('description')
     } else {
       this.$router.push('login')
     }
@@ -65,24 +72,20 @@ export default {
         contactEmail: 'john@doe.com',
         avatar: 'MALE_CAUCASIAN_BLOND_BEARD'
       },
-      showAvatarPicker: false,
-      avatar: 1
+      avatar: 1,
+      background: 1,
+      description: '',
+      setting: false
     }
   },
   methods: {
-    openAvatarPicker () {
-      this.showAvatarPicker = true
-    },
-    selectAvatar (avatar) {
-      this.form.avatar = avatar
-    },
-    logout () {
-      this.$session.clear()
-      this.$session.destroy()
-      this.$router.push('/login')
-    },
     settings () {
-      this.$router.push('/settings')
+      this.setting = !this.setting
+    },
+    update () {
+      this.avatar = this.$session.get('avatar')
+      this.background = this.$session.get('background')
+      this.description = this.$session.get('description')
     }
   },
   computed: {

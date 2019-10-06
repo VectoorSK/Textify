@@ -1,74 +1,105 @@
 
 <template>
 <v-container>
-    <v-card class="elevation-12 mx-auto" max-width="400">
-      <v-img
-        class="white--text"
-        height="200px"
-        src="../../public/backgrounds/1.jpg"
-      >
-        <v-row
-          align="start"
-          class="fill-height mx-2 mt-2"
-        >
-          <v-avatar
-            size="80"
-          >
-            <img
-              :src="avatarPath"
-              alt="avatar"
-            >
+    <span class="text--primary">
+      <v-form>
+        <!-- <v-file-input
+          accept="image/png, image/jpeg, image/bmp"
+          placeholder="Pick a background"
+          prepend-icon="fa-image"
+          label="Avatar"
+        ></v-file-input> -->
+        <v-row class="my-2">
+          <v-avatar class="ml-4 mr-3" max-width="40" max-height="40">
+            <v-img
+              :src="require('../../public/avatars/' + this.avatar + '.png')"
+            ></v-img>
           </v-avatar>
-          <v-spacer></v-spacer>
-          <v-btn @click="settings" fab small dark>
-            <v-icon>fa-cogs</v-icon>
-          </v-btn>
-          <v-list-item
-            class="mt-4 mb-n4"
-            color="rgba(0, 0, 0, .4)"
-            dark
-          >
-            <v-list-item-content>
-              <v-list-item-title class="title">{{ this.$session.get('username') }}</v-list-item-title>
-              <v-list-item-subtitle>{{ this.$session.get('email') }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-list-item-action-text>{{ this.$session.get('birthday') }}</v-list-item-action-text>
-            </v-list-item-action>
-          </v-list-item>
+          <v-dialog v-model="dialogAv" max-width="55vw">
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on">Change Avatar</v-btn>
+            </template>
+            <!-- Change Avatar Pop Up -->
+            <v-card class="pr-3">
+              <v-row class="mx-0">
+                <v-col cols="1" v-for="i in 50" :key="i" class="mx-0">
+                  <v-btn depressed fab @click="changeAvatar(i)" min-width="55" min-height="52" color="blue-grey lighten-3">
+                    <v-avatar color="white">
+                      <v-img :src="require('../../public/avatars/' + i + '.png')"></v-img>
+                    </v-avatar>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-dialog>
         </v-row>
-      </v-img>
-      <v-card-text>
-        <span class="text--primary">
-          <v-form>
-            <v-file-input
-              accept="image/png, image/jpeg, image/bmp"
-              placeholder="Pick a background"
-              prepend-icon="fa-image"
-              label="Avatar"
-            ></v-file-input>
-            <v-text-field v-model="email" prepend-icon="fa-at" name="email" :rules="emailRules" label="E-mail"></v-text-field>
-            <v-textarea
-              v-model="description"
-              auto-grow
-              outlined
-              name="description"
-              color="primary"
-              label="Description"
-              rows="3"
-              maxlength="50"
-            ></v-textarea>
-            <v-btn class="mx-auto" @click="submit">submit</v-btn>
-            <v-chip disabled>{{ error }}</v-chip>
-          </v-form>
-        </span>
-      </v-card-text>
-    </v-card>
+        <v-row class="my-2">
+          <v-img
+            max-width="50" max-height="35"
+            class="ml-4 mr-3"
+            :src="require('../../public/backgrounds/' + this.background + '.png')"
+          ></v-img>
+          <v-dialog v-model="dialogBg" max-width="55vw">
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on">Change Banner</v-btn>
+            </template>
+            <!-- Change Background Pop Up -->
+            <v-card class="pr-3">
+              <v-row class="mx-0">
+                <v-col cols="1" v-for="i in 15" :key="i" class="mx-0">
+                  <v-avatar color="white" tile @click="changeBackground(i)">
+                    <v-img :src="require('../../public/backgrounds/' + i + '.png')"></v-img>
+                  </v-avatar>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-dialog>
+        </v-row>
+        <v-text-field v-model="email" prepend-icon="fa-at" name="email" :rules="emailRules" label="E-mail"></v-text-field>
+        <v-textarea
+          v-model="description"
+          auto-grow
+          outlined
+          name="description"
+          color="primary"
+          label="Description"
+          rows="3"
+          maxlength="50"
+        ></v-textarea>
+        <!-- select smiley button -->
+        <v-menu bottom offset-y max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-emoticon</v-icon>
+            </v-btn>
+          </template>
+          <!-- Emoji pop up -->
+          <EmojiTab v-model="smiley" v-on:addSmiley="description += smiley"></EmojiTab>
+        </v-menu>
+        <v-btn class="mx-auto" @click="submit">submit</v-btn>
+        <v-chip disabled>{{ error }}</v-chip>
+      </v-form>
+    </span>
   </v-container>
 </template>
 
 <script>
+import EmojiTab from '../components/Emoji'
+
 export default {
+  components: {
+    EmojiTab
+  },
+  props: {
+    desc: String
+  },
+  mounted: function () {
+    if (this.$session.exists()) {
+      this.avatar = this.$session.get('avatar')
+      this.background = this.$session.get('background')
+      this.description = this.desc
+    }
+  },
   data: () => ({
     valid: false,
     username: '',
@@ -78,20 +109,15 @@ export default {
     emailRules: [
       // eslint-disable-next-line no-useless-escape
       v => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid'
-    ]
+    ],
+    avatar: 1,
+    background: 1,
+    dialogAv: false,
+    dialogBg: false,
+    smiley: '',
+    url: 'http://localhost:4000' // ''
   }),
   methods: {
-    openAvatarPicker () {
-      this.showAvatarPicker = true
-    },
-    selectAvatar (avatar) {
-      this.form.avatar = avatar
-    },
-    logout () {
-      this.$session.clear()
-      this.$session.destroy()
-      this.$router.push('/login')
-    },
     async submit () {
       if (this.email === '') {
         this.email = this.$session.get('email')
@@ -110,12 +136,41 @@ export default {
         )
         this.$session.set('email', res.data.email)
         this.$session.set('description', res.data.description)
-
-        console.log('Logged !')
-        this.$router.push('/profile')
+        this.$emit('input', false)
+        this.$emit('update')
       } catch (error) {
         this.error = error.response.data
         console.log('response', JSON.stringify(error.response))
+      }
+    },
+    async changeAvatar (i) {
+      const res = await this.axios.post(this.url + '/api/changeAvatar', {
+        username: this.$session.get('username'),
+        avatar: i
+      })
+      if (res.data.status === 1) {
+        this.$session.set('avatar', i)
+        this.avatar = this.$session.get('avatar')
+        this.dialogAv = false
+      }
+    },
+    async changeBackground (i) {
+      const res = await this.axios.post(this.url + '/api/changeBackground', {
+        username: this.$session.get('username'),
+        background: i
+      })
+      if (res.data.status === 1) {
+        this.$session.set('background', i)
+        this.background = this.$session.get('background')
+        this.dialogBg = false
+      }
+    }
+  },
+  watch: {
+    '$route': function (to, from) {
+      if (this.$session.exists()) {
+        this.avatar = this.$session.get('avatar')
+        this.background = this.$session.get('background')
       }
     }
   }

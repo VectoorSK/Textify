@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'dist/')))
 const users = [
   {
     avatar: 6,
+    background: 7,
     name: 'Victor',
     surname: 'Belin',
     username: 'Vector',
@@ -32,10 +33,11 @@ const users = [
     friends: ['Aetaugan', 'Knokerr', 'Nanami', 'Sima', 'Elic', 'Ari', 'Edgar'],
     email: 'belin@et.esiea.fr',
     date: '13/11/1997',
-    description: 'Pure BG'
+    description: '🛹✈️🌍'
   },
   {
     avatar: 16,
+    background: 2,
     name: 'Camille',
     surname: 'Regis',
     username: 'Aetaugan',
@@ -47,6 +49,7 @@ const users = [
   },
   {
     avatar: 1,
+    background: 3,
     name: 'Alexis',
     surname: 'Cuvillier',
     username: 'Knokerr',
@@ -58,6 +61,7 @@ const users = [
   },
   {
     avatar: 17,
+    background: 4,
     name: 'Marina',
     surname: 'Kovacic',
     username: 'Nanami',
@@ -69,6 +73,7 @@ const users = [
   },
   {
     avatar: 7,
+    background: 5,
     name: 'Simona',
     surname: 'Kovacic',
     username: 'Sima',
@@ -80,6 +85,7 @@ const users = [
   },
   {
     avatar: 47,
+    background: 6,
     name: 'Ela',
     surname: 'Kovacic',
     username: 'Elic',
@@ -91,6 +97,7 @@ const users = [
   },
   {
     avatar: 43,
+    background: 7,
     name: 'Edgar',
     surname: 'Belin',
     username: 'Edgar',
@@ -102,6 +109,7 @@ const users = [
   },
   {
     avatar: 19,
+    background: 8,
     name: 'Aristide',
     surname: 'Belin',
     username: 'Ari',
@@ -177,21 +185,11 @@ const conversations = [
   }
 ]
 
-app.post('/api/test', (req, res) => {
-  console.log('coucou')
-  res.json({
-    message: "ceci est envoyé depuis l'API"
-  })
-})
-
 app.post('/api/loadUser', (req, res) => {
-  console.log('req.query', req.query)
-  console.log('req.body', req.body)
-
   const user = users.find(u => u.username === req.body.username)
   if (user) {
     res.json({
-      message: 'connected',
+      message: 'user loaded',
       friends: user.friends
     })
   } else {
@@ -202,9 +200,6 @@ app.post('/api/loadUser', (req, res) => {
 })
 
 app.post('/api/getInfo', (req, res) => {
-  console.log('req.query', req.query)
-  console.log('req.body', req.body)
-
   const user = users.find(u => u.username === req.body.username)
   if (user) {
     res.json({
@@ -336,6 +331,30 @@ app.post('/api/changeAvatar', (req, res) => {
   }
 })
 
+app.post('/api/changeBackground', (req, res) => {
+  const username = req.body.username
+  const newBG = req.body.background
+
+  const user = users.find(u => u.username === username)
+
+  if (user) {
+    for (const usr of users) {
+      if (usr.username === user.username) {
+        usr.background = newBG
+      }
+    }
+    res.json({
+      status: 1,
+      message: 'background changed'
+    })
+  } else {
+    res.json({
+      status: -1,
+      message: 'user not found'
+    })
+  }
+})
+
 app.post('/api/getConv', (req, res) => {
   const user1 = req.body.from
   const user2 = req.body.to
@@ -415,7 +434,7 @@ app.post('/api/upload-file', (req, res) => {
 app.post('/api/addUser', (req, res) => {
   const userCheck = users.find(u => u.username === req.body.username)
   const emailCheck = users.find(u => u.email === req.body.email)
-
+  // A CHANGER
   if (!userCheck) {
     if (!emailCheck) {
       users.push({

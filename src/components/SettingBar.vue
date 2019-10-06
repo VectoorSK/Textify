@@ -5,6 +5,7 @@
       <v-avatar color="blue-grey lighten-5" class="mr-3">
         <v-img v-bind:src="path"></v-img>
       </v-avatar>
+      <span class="mr-2">{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
       <v-select
         v-if="friend === null"
         v-model="to"
@@ -12,7 +13,6 @@
         @change="selectFriend"
         label="Select a friend"
       ></v-select>
-      <span>{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
       <v-spacer></v-spacer>
       <!-- CHANGE COLOR MENU -->
       <v-menu bottom offset-y :close-on-content-click="false" v-model="colorMenu">

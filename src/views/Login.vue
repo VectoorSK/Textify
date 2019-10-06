@@ -208,22 +208,23 @@ export default {
     async login () {
       console.log(this.username)
       console.log(this.password)
-      // try {
       const res = await this.axios.post(this.url + '/api/login', {
         username: this.username,
         password: this.password
       })
       if (res) {
-        console.log(res.data)
+        console.log(res.data.user)
+        const user = res.data.user
         this.$session.start()
-        this.$session.set('name', res.data.user.name)
-        this.$session.set('surname', res.data.user.surname)
-        this.$session.set('username', res.data.user.username)
-        this.$session.set('avatar', res.data.user.avatar)
-        this.$session.set('email', res.data.user.email)
-        this.$session.set('birthday', res.data.user.date)
-        this.$session.set('description', res.data.user.description)
-        this.$session.set('friends', res.data.user.friends)
+        this.$session.set('name', user.name)
+        this.$session.set('surname', user.surname)
+        this.$session.set('username', user.username)
+        this.$session.set('avatar', user.avatar)
+        this.$session.set('background', user.background)
+        this.$session.set('email', user.email)
+        this.$session.set('birthday', user.date)
+        this.$session.set('description', user.description)
+        this.$session.set('friends', user.friends)
 
         console.log('Logged !')
         this.$router.push('/profile')
