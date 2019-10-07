@@ -67,7 +67,7 @@
           maxlength="50"
         ></v-textarea>
         <!-- select smiley button -->
-        <v-menu bottom offset-y max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
+        <v-menu left top offset-x max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
           <template v-slot:activator="{ on }">
             <v-btn icon v-on="on">
               <v-icon>mdi-emoticon</v-icon>

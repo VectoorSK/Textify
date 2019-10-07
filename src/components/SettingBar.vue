@@ -6,28 +6,22 @@
         <v-img v-bind:src="path"></v-img>
       </v-avatar>
       <span class="mr-2">{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
-      <v-select
-        v-if="friend === null"
-        v-model="to"
-        :items="friendlist"
-        @change="selectFriend"
-        label="Select a friend"
-      ></v-select>
+      <v-col cols="4" class="ma-0 pa-0">
+        <v-select
+          v-if="friend === null"
+          v-model="to"
+          :items="friendlist"
+          @change="selectFriend"
+          label="Select a friend"
+          class="mt-4 mb-n4 pa-0"
+          :color="color"
+        ></v-select>
+      </v-col>
       <v-spacer></v-spacer>
-      <!-- CHANGE COLOR MENU -->
-      <v-menu bottom offset-y :close-on-content-click="false" v-model="colorMenu">
-        <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" class="ml-8">
-              <v-icon :color="color">color_lens</v-icon>
-            </v-btn>
-        </template>
-        <!-- ColorPicker pop up -->
-        <ColorPicker v-model="color"></ColorPicker>
-      </v-menu>
       <!-- SETTING MENU -->
       <v-menu bottom offset-y :close-on-content-click="false" v-model="settingMenu">
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" right>
+          <v-btn icon outlined :color="color" v-on="on" right>
             <v-icon :color="color">more_horiz</v-icon>
           </v-btn>
         </template>
@@ -39,23 +33,21 @@
 </template>
 
 <script>
-import ColorPicker from './ColorPicker'
 import SettingList from './SettingList'
 
 export default {
   components: {
-    ColorPicker, SettingList
+    SettingList
   },
   props: {
     friendlist: Array,
-    friend: Object
+    friend: Object,
+    color: String
   },
   data: () => ({
     to: '',
     currentSmiley: '🙂',
-    color: '#512DA8',
     dialog: false,
-    colorMenu: false,
     settingMenu: false
   }),
   methods: {
@@ -66,17 +58,13 @@ export default {
   },
   computed: {
     path: function () {
-      return this.friend ? require('../../public/avatars/' + this.friend.avatar + '.png') : require('../../public/avatars/null.png')
+      return this.friend ? require('../../public/avatars/' + this.friend.avatar + '.png') : require('../../public/avatars/0.png')
     }
   },
   watch: {
     currentSmiley: function () {
       this.settingMenu = false
       this.$emit('input', this.currentSmiley)
-    },
-    color: function () {
-      this.colorMenu = false
-      this.$emit('update-color', this.color)
     }
   }
 }

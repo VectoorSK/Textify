@@ -65,6 +65,7 @@ export default {
       this.$router.push('/login')
     }
     this.load(this.userload)
+    this.color = this.$session.get('colorApp')
   },
   data: () => ({
     userList: [],

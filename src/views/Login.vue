@@ -45,6 +45,24 @@
           <v-card-text>
             <v-form v-model="valid">
               <v-text-field
+                label="Name"
+                name="regName"
+                prepend-icon="person"
+                type="text"
+                v-model="name"
+                :rules="NameRules"
+                required
+              ></v-text-field>
+              <v-text-field
+                label="Surname"
+                name="regSurname"
+                prepend-icon="person"
+                type="text"
+                v-model="surname"
+                :rules="SurnameRules"
+                required
+              ></v-text-field>
+              <v-text-field
                 label="Username"
                 name="regUsername"
                 prepend-icon="person"
@@ -137,14 +155,18 @@ export default {
     valid: false,
     error: '',
     errorReg: '',
+    name: '',
+    NameRules: [v => !!v || 'Missing Name'],
+    surname: '',
+    SurnameRules: [v => !!v || 'Missing Surname'],
     username: '',
-    password: 'Password123',
     UserList: [],
     UsernameRules: [v => !!v || 'Missing Username'],
+    password: 'Password123',
     PassRules: [v => !!v || 'Missing Password'],
     regUsername: '',
     regUsernameRules: [
-      v => !!v || 'Username is required',
+      v => !!v || 'Missing Username',
       v => (v && v.length <= 10) || 'Username must be less than 10 characters',
       v => (v && v.length >= 4) || 'Username must be more than 4 characters',
       v =>
@@ -186,16 +208,21 @@ export default {
       console.log(this.username)
       console.log(this.regPassword)
       // Delete localhost:4000 for prod
-      this.axios.post(this.url + '/api/addUser', {
-        avatar: null,
-        name: '',
-        surname: '',
+      const user = {
+        avatar: 0,
+        background: 0,
+        name: this.name,
+        surname: this.surname,
         username: this.username,
         password: this.regPassword,
         friends: [],
         email: this.email,
         date: this.date,
-        description: ''
+        description: '',
+        colorApp: '#512DA8'
+      }
+      this.axios.post(this.url + '/api/addUser', {
+        user: user
       })
         .then((response) => {
           console.log('Registered !')
@@ -225,10 +252,10 @@ export default {
         this.$session.set('birthday', user.date)
         this.$session.set('description', user.description)
         this.$session.set('friends', user.friends)
+        this.$session.set('colorApp', user.colorApp)
 
         console.log('Logged !')
         this.$router.push('/profile')
-        // location.reload()
       }
       // } catch (error) {
       // this.error = error.response.data.message

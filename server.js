@@ -33,7 +33,8 @@ const users = [
     friends: ['Aetaugan', 'Knokerr', 'Nanami', 'Sima', 'Elic', 'Ari', 'Edgar'],
     email: 'belin@et.esiea.fr',
     date: '13/11/1997',
-    description: '🛹✈️🌍'
+    description: '🛹✈️🌍',
+    colorApp: '#512DA8'
   },
   {
     avatar: 16,
@@ -45,7 +46,8 @@ const users = [
     friends: ['Vector', 'Knokerr', 'Nanami', 'Sima', 'Elic'],
     email: 'regis@et.esiea.fr',
     date: '11/04/1997',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 1,
@@ -57,7 +59,8 @@ const users = [
     friends: ['Aetaugan', 'Vector'],
     email: 'acuvillier@et.esiea.fr',
     date: '01/01/1994',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 17,
@@ -69,7 +72,8 @@ const users = [
     friends: ['Aetaugan', 'Vector', 'Sima', 'Elic'],
     email: 'mkovacic@gmail.com',
     date: '25/05/1992',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 7,
@@ -81,7 +85,8 @@ const users = [
     friends: ['Aetaugan', 'Vector', 'Nanami', 'Elic'],
     email: 'skovacic@gmail.com',
     date: '01/01/1995',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 47,
@@ -93,7 +98,8 @@ const users = [
     friends: ['Aetaugan', 'Vector', 'Nanami', 'Sima'],
     email: 'ekovacic@gmail.com',
     date: '01/01/1998',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 43,
@@ -103,9 +109,10 @@ const users = [
     username: 'Edgar',
     password: 'Password123',
     friends: ['Vector', 'Ari'],
-    email: 'abelin@gmail.com',
+    email: 'ebelin@gmail.com',
     date: '01/09/2003',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   },
   {
     avatar: 19,
@@ -115,9 +122,10 @@ const users = [
     username: 'Ari',
     password: 'Password123',
     friends: ['Vector', 'Edgar'],
-    email: 'ebelin@gmail.com',
+    email: 'abelin@gmail.com',
     date: '05/07/2002',
-    description: ''
+    description: '',
+    colorApp: '#512DA8'
   }
 ]
 
@@ -128,16 +136,51 @@ const conversations = [
     content: [
       {
         type: 'text',
-        content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
+        content: 'Hey! Ca va ? 😊',
         sender: 'Vector',
-        from: 'Paris - 75001 (France)',
+        from: 'Rueil Malmaison - 92500 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
+        content: "Yosh! Ca va tranquille. Tu serais chaud d'aller à Inox à Chatou ? 🎵",
         sender: 'Aetaugan',
-        from: 'Varazdin - 42000 (Hrvatska)',
+        from: 'Fontainebleau - 77920 (France)',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: "Euh bah ouais pourquoi pas c'est quand ? Tu connais les artistes ?",
+        sender: 'Vector',
+        from: 'Rueil Malmaison - 92500 (France)',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: "C'est le 7 septembre. De ce que je sais y'a Hilight Tribe, ca me suffit! 😝",
+        sender: 'Aetaugan',
+        from: 'Fontainebleau - 77920 (France)',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: "Bah ouais j'suis chaud 😎, tu sais combien c'est ? Et sinon après on peut toujours squatter chez moi à La Celle si ca te va. Je crois qu'il me reste des bières de Samedi dernier 🍻",
+        sender: 'Vector',
+        from: 'Rueil Malmaison - 92500 (France)',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: 'Okay, ca marche. Bah vas-y je regarde ca avec la team et je te confirme ca! 😘',
+        sender: 'Aetaugan',
+        from: 'Fontainebleau - 77920 (France)',
+        date: new Date()
+      },
+      {
+        type: 'smiley',
+        content: '👌',
+        sender: 'Vector',
+        from: '',
         date: new Date()
       }
     ]
@@ -148,37 +191,65 @@ const conversations = [
     content: [
       {
         type: 'text',
-        content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
+        content: 'Hey!! How is your new flat?',
         sender: 'Vector',
         from: 'Paris - 75001 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'Veritatis officia fugiat sunt id dignissimos porro, corrupti iusto, ullam animi nemo dolore totam doloremque ipsam magni, ea similique. Voluptatum, perferendis perspiciatis?',
+        content: "It's awesome!!! 🤩 My roomates are so nice, they also come from abroad (Brazil and Chile) so we'll both learn French togethers!",
         sender: 'Nanami',
-        from: 'Varazdin - 42000 (Hrvatska)',
+        from: 'Malakoff - 92240 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+        content: "Oh I see, that's so cool!! Send me some photos when you can 😊",
         sender: 'Vector',
         from: 'Paris - 75001 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'blablablabla',
+        content: 'So your flat is next to Malakoff station on M13 ?',
         sender: 'Vector',
         from: 'Paris - 75001 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'blablablablablablablabla',
+        content: 'Yes exactly, I send you the location so you can see 👀',
         sender: 'Nanami',
-        from: 'Varazdin - 42000 (Hrvatska)',
+        from: 'Malakoff - 92240 (France)',
+        date: new Date()
+      },
+      {
+        type: 'pos',
+        content: 'https://www.google.com/maps?q=48.817335,2.301201',
+        sender: 'Nanami',
+        from: '',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: "Oh okay, you're really close! I look forward to see you there 😁",
+        sender: 'Vector',
+        from: 'Paris - 75001 (France)',
+        date: new Date()
+      },
+      {
+        type: 'text',
+        content: 'Yessss ofc!! Grab some beers and come when you want 😜🍻',
+        sender: 'Nanami',
+        from: 'Malakoff - 92240 (France)',
+        date: new Date()
+      },
+      {
+        type: 'smiley',
+        content: '🍻',
+        sender: 'Vector',
+        from: 'Paris - 75001 (France)',
         date: new Date()
       }
     ]
@@ -207,6 +278,30 @@ app.post('/api/getInfo', (req, res) => {
       avatar: user.avatar,
       name: user.name,
       surname: user.surname
+    })
+  } else {
+    res.json({
+      message: 'not_found'
+    })
+  }
+})
+
+app.post('/api/getFriendInfo', (req, res) => {
+  const user = users.find(u => u.username === req.body.username)
+  if (user) {
+    const friend = {
+      name: user.name,
+      surname: user.surname,
+      username: user.username,
+      email: user.email,
+      birthday: user.date,
+      avatar: user.avatar,
+      background: user.background,
+      description: user.description
+    }
+    res.json({
+      message: 'found',
+      friend: friend
     })
   } else {
     res.json({
@@ -331,6 +426,30 @@ app.post('/api/changeAvatar', (req, res) => {
   }
 })
 
+app.post('/api/changeColor', (req, res) => {
+  const username = req.body.username
+  const newColor = req.body.color
+
+  const user = users.find(u => u.username === username)
+
+  if (user) {
+    for (const usr of users) {
+      if (usr.username === user.username) {
+        usr.colorApp = newColor
+      }
+    }
+    res.json({
+      status: 1,
+      message: 'color changed'
+    })
+  } else {
+    res.json({
+      status: -1,
+      message: 'user not found'
+    })
+  }
+})
+
 app.post('/api/changeBackground', (req, res) => {
   const username = req.body.username
   const newBG = req.body.background
@@ -432,17 +551,11 @@ app.post('/api/upload-file', (req, res) => {
 })
 
 app.post('/api/addUser', (req, res) => {
-  const userCheck = users.find(u => u.username === req.body.username)
-  const emailCheck = users.find(u => u.email === req.body.email)
-  // A CHANGER
+  const userCheck = users.find(u => u.username === req.body.user.username)
+  const emailCheck = users.find(u => u.email === req.body.user.email)
   if (!userCheck) {
     if (!emailCheck) {
-      users.push({
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email,
-        birthday: req.body.date
-      })
+      users.push(req.body.user)
       res.json({
         message: 'In !'
       })

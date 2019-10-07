@@ -15,7 +15,7 @@
       </v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer app v-model="navDrawer" v-if="logged" class="primary">
+    <v-navigation-drawer app v-model="navDrawer" v-if="logged" :color="color">
       <v-col align="center">
         <v-dialog width="60vw" v-model="dialog">
           <template v-slot:activator="{ on }">
@@ -53,13 +53,28 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <template v-slot:append>
+      <!-- CHANGE COLOR MENU -->
+      <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenu">
+        <template v-slot:activator="{ on }">
+          <v-btn icon outlined dark v-on='on' class="ma-2">
+            <v-icon>color_lens</v-icon>
+          </v-btn>
+        </template>
+        <!-- ColorPicker pop up -->
+        <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
+      </v-menu></template>
     </v-navigation-drawer>
-
   </nav>
 </template>
 
 <script>
+import ColorPicker from './ColorPicker'
+
 export default {
+  components: {
+    ColorPicker
+  },
   data: () => ({
     logged: false,
     usrLogged: {
@@ -68,14 +83,15 @@ export default {
       surname: ''
     },
     url: 'http://localhost:4000',
-    navDrawer: false,
+    navDrawer: true,
     links: [
       { icon: 'person', text: 'Profile', route: '/profile' },
       { icon: 'people_alt', text: 'Friends', route: '/friends' },
       { icon: 'comment', text: 'Messages', route: '/textify/null' }
     ],
     dialog: false,
-    avatar: 1
+    colorMenu: false,
+    color: 'primary'
   }),
   methods: {
     async changeAvatar (i) {
@@ -86,11 +102,18 @@ export default {
       if (res.data.status === 1) {
         this.$session.set('avatar', i)
         this.usrLogged.avatar = this.$session.get('avatar')
-        console.log(res.data.message)
-      } else {
-        console.log(res.data.message)
       }
       this.dialog = false
+    },
+    async changeColor () {
+      const res = await this.axios.post(this.url + '/api/changeColor', {
+        username: this.$session.get('username'),
+        color: this.color
+      })
+      if (res.data.status === 1) {
+        this.$session.set('colorApp', this.color)
+        this.$router.go()
+      }
     },
     log () {
       if (this.logged) {
@@ -101,9 +124,7 @@ export default {
         this.usrLogged.surname = ''
         this.logged = false
       }
-      // this.$forceUpdate()
       this.$router.push({ name: 'login' })
-      // location.reload()
     }
   },
   computed: {
@@ -117,7 +138,7 @@ export default {
       this.usrLogged.avatar = this.$session.get('avatar')
       this.usrLogged.name = this.$session.get('name')
       this.usrLogged.surname = this.$session.get('surname')
-      this.avatar = this.$session.get('avatar')
+      this.color = this.$session.get('colorApp')
     } else {
       this.logged = false
     }
@@ -129,7 +150,7 @@ export default {
         this.usrLogged.avatar = this.$session.get('avatar')
         this.usrLogged.name = this.$session.get('name')
         this.usrLogged.surname = this.$session.get('surname')
-        this.avatar = this.$session.get('avatar')
+        this.color = this.$session.get('colorApp')
       } else {
         this.logged = false
       }

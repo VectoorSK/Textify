@@ -14,7 +14,7 @@
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
-            <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" v-on:update-color="updateColor"></SettingBar>
+            <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" :color="color"></SettingBar>
             <Conversation :conversation="conversation" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
@@ -115,6 +115,7 @@ export default {
   components: { EmojiTab, Conversation, SettingBar },
   mounted: function () {
     if (this.$session.exists()) {
+      this.color = this.$session.get('colorApp')
       this.user = this.$session.get('username')
       this.userFriends = this.$session.get('friends')
       this.to = this.$route.params.username
@@ -414,6 +415,7 @@ export default {
       } else {
         this.to = ''
       }
+      this.color = this.$session.get('colorApp')
       this.loadConv()
     }
   }
