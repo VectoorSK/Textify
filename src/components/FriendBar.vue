@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="blue-grey lighten-4" class="mb-2">
     <v-row class="mx-0" justify="space-between" align="center">
-      <v-dialog width="33vw" v-model="dialog">
+      <v-dialog width="33vw" v-model="dialogAdd">
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on">
             <v-icon>add_circle</v-icon>
@@ -42,7 +42,7 @@ export default {
   data: () => ({
     avatar: 1,
     newFriend: '',
-    dialog: false
+    dialogAdd: false
   }),
   methods: {
     checkUser (friend) {

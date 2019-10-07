@@ -46,7 +46,7 @@ const users = [
     friends: ['Vector', 'Knokerr', 'Nanami', 'Sima', 'Elic'],
     email: 'regis@et.esiea.fr',
     date: '11/04/1997',
-    description: "➡️ Paris 📍\n🎓 Ecole d'ingénieur ESIEA\n⚔️ Live-Action RPG \n🌍 Travelings",
+    description: "➡️ Paris 📍\n🎓 Ecole d'ingénieur ESIEA\n⚔️ Live-Action RPG \n🌍 Traveling",
     colorApp: '#512DA8'
   },
   {
@@ -482,20 +482,32 @@ app.post('/api/getConv', (req, res) => {
   const From = users.find(u => u.username === user1)
   const To = users.find(u => u.username === user2)
 
+  const to = {
+    avatar: To.avatar,
+    background: To.background,
+    name: To.name,
+    surname: To.surname,
+    username: To.username,
+    email: To.email,
+    birthday: To.date,
+    description: To.description,
+    colorApp: To.colorApp
+  }
+
   if (conv) {
     res.json({
       status: 1,
       message: 'conversation trouvé',
       content: conv.content,
       From: From,
-      To: To
+      To: to
     })
   } else if (From && To) {
     res.json({
       status: 0,
       message: 'aucune conversation trouvé',
       From: From,
-      To: To
+      To: to
     })
   } else {
     const wrongUser = !From ? user1 : user2

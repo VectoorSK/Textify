@@ -18,10 +18,19 @@
         ></v-select>
       </v-col>
       <v-spacer></v-spacer>
+      <!-- SHOW PROFILE -->
+      <v-dialog v-model="dialogFriend" max-width="400" class="pa-0">
+        <template v-slot:activator="{ on }">
+          <v-btn icon outlined :color="color" v-on="on" class="mr-2">
+            <v-icon :color="color">person</v-icon>
+          </v-btn>
+        </template>
+        <FriendProfile :friend="friend" class="pa-0"></FriendProfile>
+      </v-dialog>
       <!-- SETTING MENU -->
       <v-menu bottom offset-y :close-on-content-click="false" v-model="settingMenu">
         <template v-slot:activator="{ on }">
-          <v-btn icon outlined :color="color" v-on="on" right>
+          <v-btn icon outlined :color="color" v-on="on">
             <v-icon :color="color">more_horiz</v-icon>
           </v-btn>
         </template>
@@ -34,10 +43,11 @@
 
 <script>
 import SettingList from './SettingList'
+import FriendProfile from './FriendProfile'
 
 export default {
   components: {
-    SettingList
+    SettingList, FriendProfile
   },
   props: {
     friendlist: Array,
@@ -48,12 +58,13 @@ export default {
     to: '',
     currentSmiley: '🙂',
     dialog: false,
-    settingMenu: false
+    settingMenu: false,
+    dialogFriend: false,
+    url: 'http://localhost:4000' // ''
   }),
   methods: {
     selectFriend () {
       this.$router.push({ path: this.to })
-      // location.reload()
     }
   },
   computed: {
