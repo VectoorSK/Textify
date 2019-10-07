@@ -39,7 +39,9 @@
       </v-img>
       <v-card-text>
         <span class="text--primary">
-          <span v-if="setting === false">{{ this.$session.get('description') }}</span>
+          <div v-if="setting === false">
+            <span v-for="(lines, id) in descMultLine" :key="id">{{ lines }}<br/></span>
+          </div>
           <Settings v-else v-model="setting" :desc="description" v-on:update="update"></Settings>
         </span>
       </v-card-text>
@@ -85,6 +87,12 @@ export default {
   computed: {
     avatarPath: function () {
       return require('../../public/avatars/' + this.avatar + '.png')
+    },
+    descMultLine: function () {
+      return this.description.split('\n')
+    },
+    nbLines: function () {
+      return this.descMultLine.length
     }
   }
 }
