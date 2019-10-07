@@ -409,7 +409,7 @@ export default {
     }
   },
   watch: {
-    '$route': function (to, from) {
+    '$route': function () {
       if (this.$route.params.username !== 'null') {
         this.to = this.$route.params.username
       } else {
@@ -421,6 +421,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>

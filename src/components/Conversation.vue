@@ -59,7 +59,7 @@
                 :dark="mess.sender === user ? true : false"
                 target="_blank"
               >
-                <v-icon small class="mr-2">fa-map-marker-alt</v-icon>
+                <v-icon class="ml-n1 mr-1">person_pin</v-icon>
                 FIND ME
               </v-btn>
             </v-card>

@@ -482,7 +482,7 @@ app.post('/api/getConv', (req, res) => {
   const From = users.find(u => u.username === user1)
   const To = users.find(u => u.username === user2)
 
-  const to = {
+  const to = To ? {
     avatar: To.avatar,
     background: To.background,
     name: To.name,
@@ -492,7 +492,7 @@ app.post('/api/getConv', (req, res) => {
     birthday: To.date,
     description: To.description,
     colorApp: To.colorApp
-  }
+  } : {}
 
   if (conv) {
     res.json({
