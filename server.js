@@ -33,7 +33,7 @@ const users = [
     friends: ['Aetaugan', 'Knokerr', 'Nanami', 'Sima', 'Elic', 'Ari', 'Edgar'],
     email: 'belin@et.esiea.fr',
     date: '13/11/1997',
-    description: '🛹✈️🌍',
+    description: "➡️ Paris 📍\n🎓 Ecole d'ingénieur ESIEA\n🛹 Street skating\n🌍 Traveling",
     colorApp: '#512DA8'
   },
   {
@@ -46,7 +46,7 @@ const users = [
     friends: ['Vector', 'Knokerr', 'Nanami', 'Sima', 'Elic'],
     email: 'regis@et.esiea.fr',
     date: '11/04/1997',
-    description: '',
+    description: "➡️ Paris 📍\n🎓 Ecole d'ingénieur ESIEA\n⚔️ Live-Action RPG \n🌍 Travelings",
     colorApp: '#512DA8'
   },
   {
@@ -59,7 +59,7 @@ const users = [
     friends: ['Aetaugan', 'Vector'],
     email: 'acuvillier@et.esiea.fr',
     date: '01/01/1994',
-    description: '',
+    description: "➡️ Laval 📍\n🎓 Ecole d'ingénieur ESIEA\n⛵ Sailing boat\n⚜️ Scout de France",
     colorApp: '#512DA8'
   },
   {
@@ -72,7 +72,7 @@ const users = [
     friends: ['Aetaugan', 'Vector', 'Sima', 'Elic'],
     email: 'mkovacic@gmail.com',
     date: '25/05/1992',
-    description: '',
+    description: '➡️ Paris 📍\n🎓 Croatian teacher\n🍻 Partying\n🎮 Video games',
     colorApp: '#512DA8'
   },
   {
@@ -84,8 +84,8 @@ const users = [
     password: 'Password123',
     friends: ['Aetaugan', 'Vector', 'Nanami', 'Elic'],
     email: 'skovacic@gmail.com',
-    date: '01/01/1995',
-    description: '',
+    date: '19/04/1995',
+    description: '➡️ Varazdin 📍\n🎓 Faculty of Organization and Informatics (FOI)\n🍻 Partying\n🎮 Video games',
     colorApp: '#512DA8'
   },
   {
@@ -97,8 +97,8 @@ const users = [
     password: 'Password123',
     friends: ['Aetaugan', 'Vector', 'Nanami', 'Sima'],
     email: 'ekovacic@gmail.com',
-    date: '01/01/1998',
-    description: '',
+    date: '05/03/1999',
+    description: '➡️ Varazdin 📍\n🎓 Faculty of Organization and Informatics (FOI)\n🍻 Partying\n🎮 Video games',
     colorApp: '#512DA8'
   },
   {
@@ -111,7 +111,7 @@ const users = [
     friends: ['Vector', 'Ari'],
     email: 'ebelin@gmail.com',
     date: '01/09/2003',
-    description: '',
+    description: '➡️ La Celle St Cloud 📍\n🎓 Lycée Passy Buzenval\n🎮 Video games\n📺 Anime',
     colorApp: '#512DA8'
   },
   {
@@ -124,7 +124,7 @@ const users = [
     friends: ['Vector', 'Edgar'],
     email: 'abelin@gmail.com',
     date: '05/07/2002',
-    description: '',
+    description: '➡️ La Celle St Cloud 📍\n🎓 Lycée Corneille\n🎮 Video games\n📚 Mangas',
     colorApp: '#512DA8'
   }
 ]

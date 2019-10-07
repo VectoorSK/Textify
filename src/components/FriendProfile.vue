@@ -38,7 +38,7 @@
       </v-img>
       <v-card-text>
         <span class="text--primary">
-          <span>{{ friend.description }}</span>
+          <span v-for="(lines, id) in descMultLine" :key="id">{{ lines }}<br/></span>
         </span>
       </v-card-text>
     </v-card>
@@ -50,21 +50,9 @@ export default {
   props: {
     friend: Object
   },
-  mounted: function () {
-    if (this.$session.exists()) {
-      this.avatar = this.$session.get('avatar')
-      this.background = this.$session.get('background')
-      this.description = this.$session.get('description')
-    } else {
-      this.$router.push('login')
-    }
-  },
   data () {
     return {
-      loading: false,
-      avatar: 1,
-      background: 1,
-      description: ''
+      loading: false
     }
   },
   methods: {
@@ -72,6 +60,14 @@ export default {
       this.avatar = this.$session.get('avatar')
       this.background = this.$session.get('background')
       this.description = this.$session.get('description')
+    }
+  },
+  computed: {
+    descMultLine: function () {
+      return this.friend.description.split('\n')
+    },
+    nbLines: function () {
+      return this.descMultLine.length
     }
   }
 }

@@ -64,7 +64,7 @@
           color="primary"
           label="Description"
           rows="3"
-          maxlength="50"
+          maxlength="150"
         ></v-textarea>
         <!-- select smiley button -->
         <v-menu left top offset-x max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
