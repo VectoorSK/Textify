@@ -18,7 +18,7 @@
             <Conversation :conversation="conversation" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
-        <v-row align="center" class="my-0 mx-2 pa-0">
+        <v-row v-if="friendLoad !== null" align="center" class="my-0 mx-2 pa-0">
           <v-col cols="2" class="ma-0 pa-0">
             <!-- select smiley button -->
             <v-menu top offset-y max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
@@ -121,7 +121,7 @@ export default {
       this.to = this.$route.params.username
       this.loadConv()
     } else {
-      this.$router.push({ name: 'login' })
+      this.$router.push('/')
     }
   },
   data: () => ({
@@ -156,7 +156,7 @@ export default {
       )
       if (res.data.status === 1) {
         console.log('FOUND')
-        console.log(res)
+        console.log(res.data)
         this.conversation = res.data.content
         this.friendLoad = res.data.To
       } else if (res.data.status === 0) {

@@ -9,11 +9,42 @@
         </v-toolbar-title>
       </v-expand-x-transition>
       <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
       <v-btn text @click="log" router to="/login">
         <v-icon small class="mr-1">{{ logged ? 'fa-sign-out-alt' : 'fa-sign-in-alt' }}</v-icon> <!-- exit_to_app -->
         <span>{{ logged ? 'Log Out' : 'Log In' }}</span>
       </v-btn>
     </v-app-bar>
+
+    <v-footer fixed class="grey lighten-4">
+      <!-- CHANGE COLOR MENU -->
+      <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenuFooter">
+        <template v-slot:activator="{ on: menu }">
+          <v-tooltip right>
+            <template v-slot:activator="{ on: tooltip }">
+              <div v-on="{ ...menu, ...tooltip }">
+                <v-scale-transition :hide-on-leave="navDrawer ? true : false">
+                  <v-btn v-if="!navDrawer" small icon outlined :color="color" >
+                    <v-icon>mdi-palette</v-icon>
+                  </v-btn>
+                </v-scale-transition>
+              </div>
+            </template>
+            <span>Change color app</span>
+          </v-tooltip>
+        </template>
+        <!-- ColorPicker pop up -->
+        <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
+      </v-menu>
+      <v-spacer></v-spacer>
+      <v-btn fab depressed color="grey lighten-4" class="pt-2" router to="/">
+        <v-img :src="require('../../public/logos/textify-logo-' + this.color.slice(-6) + '.png')" max-width="35" class="ma-1 pa-0"></v-img>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn v-if="!navDrawer" small icon disabled>
+        <v-icon></v-icon>
+      </v-btn>
+    </v-footer>
 
     <v-navigation-drawer app v-model="navDrawer" v-if="logged" :color="color">
       <v-col align="center">
@@ -45,7 +76,8 @@
         <v-list-item-group>
           <v-list-item v-for="(link, id) in links" :key="id" router :to="link.route">
             <v-list-item-action>
-              <v-icon>{{ link.icon }}</v-icon>
+              <v-icon v-if="link.icon">{{ link.icon }}</v-icon>
+              <v-img v-else max-width="22" :src="link.img"></v-img>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>{{ link.text }}</v-list-item-title>
@@ -54,16 +86,24 @@
         </v-list-item-group>
       </v-list>
       <template v-slot:append>
-      <!-- CHANGE COLOR MENU -->
-      <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenu">
-        <template v-slot:activator="{ on }">
-          <v-btn icon outlined dark v-on='on' class="ma-2">
-            <v-icon>color_lens</v-icon>
-          </v-btn>
-        </template>
-        <!-- ColorPicker pop up -->
-        <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
-      </v-menu></template>
+        <div>
+          <!-- CHANGE COLOR MENU -->
+          <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenu">
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip right>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon outlined dark v-on="{ ...menu, ...tooltip }" class="ma-2">
+                    <v-icon>mdi-palette</v-icon>
+                  </v-btn>
+                </template>
+                <span>Change color app</span>
+              </v-tooltip>
+            </template>
+            <!-- ColorPicker pop up -->
+            <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
+          </v-menu>
+        </div>
+      </template>
     </v-navigation-drawer>
   </nav>
 </template>
@@ -85,13 +125,15 @@ export default {
     url: 'http://localhost:4000',
     navDrawer: true,
     links: [
-      { icon: 'person', text: 'Profile', route: '/profile' },
-      { icon: 'people_alt', text: 'Friends', route: '/friends' },
-      { icon: 'comment', text: 'Messages', route: '/textify/null' }
+      { img: require('../../public/logos/textify-logo-white.png'), text: 'Home', route: '/' },
+      { icon: 'mdi-clipboard-account-outline', text: 'Profile', route: '/profile' },
+      { icon: 'mdi-account-multiple', text: 'Friends', route: '/friends' },
+      { icon: 'mdi-message-processing-outline', text: 'Messages', route: '/textify/null' }
     ],
     dialog: false,
     colorMenu: false,
-    color: 'primary'
+    colorMenuFooter: false,
+    color: '#512DA8'
   }),
   methods: {
     async changeAvatar (i) {
@@ -112,7 +154,13 @@ export default {
       })
       if (res.data.status === 1) {
         this.$session.set('colorApp', this.color)
-        this.$router.go()
+        this.colorMenu = false
+        this.colorMenuFooter = false
+        const current = this.$router.currentRoute.path
+        if (!current.includes('profile')) {
+          this.$router.push('profile')
+          this.$router.push(current)
+        }
       }
     },
     log () {
@@ -124,7 +172,7 @@ export default {
         this.usrLogged.surname = ''
         this.logged = false
       }
-      this.$router.push({ name: 'login' })
+      this.$router.push('/')
     }
   },
   computed: {
@@ -153,6 +201,7 @@ export default {
         this.color = this.$session.get('colorApp')
       } else {
         this.logged = false
+        this.color = '#512DA8'
       }
     }
   }

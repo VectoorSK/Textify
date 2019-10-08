@@ -62,10 +62,15 @@ export default {
   },
   mounted: function () {
     if (!this.$session.exists()) {
-      this.$router.push('/login')
+      this.$router.push('/')
     }
     this.load(this.userload)
     this.color = this.$session.get('colorApp')
+  },
+  watch: {
+    '$route': function () {
+      this.color = this.$session.get('colorApp')
+    }
   },
   data: () => ({
     userList: [],
@@ -158,11 +163,13 @@ export default {
         if (res) {
           this.load(this.userload)
           this.open = !this.open
-        }
-        if (res.data.error) {
-          this.err = res.data.message
-        } else {
-          this.err = ''
+          if (res.data.error) {
+            this.err = res.data.message
+          } else {
+            let list = res.data.list.sort()
+            this.$session.set('friends', list)
+            this.err = ''
+          }
         }
       } else { // Sinon
         this.err = 'Invalid username'

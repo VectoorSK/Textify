@@ -1,15 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Home from './views/Home'
 import Profile from './views/Profile'
 import Friends from './views/Friends'
 import Textify from './views/Textify'
-import Login from './views/Login'
+// import Login from './views/Login'
 import Settings from './views/Settings'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: Home
+    },
     {
       path: '/profile',
       name: 'profile',
@@ -25,11 +31,11 @@ export default new Router({
       name: 'textify',
       component: Textify
     },
-    {
+    /* {
       path: '/login',
       name: 'login',
       component: Login
-    },
+    }, */
     {
       path: '/settings',
       name: 'settings',

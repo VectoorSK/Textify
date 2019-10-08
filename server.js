@@ -133,6 +133,8 @@ const conversations = [
   {
     from: 'Vector',
     to: 'Aetaugan',
+    from_seen: true,
+    to_seen: false,
     content: [
       {
         type: 'text',
@@ -188,6 +190,8 @@ const conversations = [
   {
     from: 'Vector',
     to: 'Nanami',
+    from_seen: true,
+    to_seen: false,
     content: [
       {
         type: 'text',
@@ -311,7 +315,6 @@ app.post('/api/getFriendInfo', (req, res) => {
 })
 
 app.post('/api/addFriend', (req, res) => {
-  console.log('req.query', req.query)
   console.log('req.body', req.body)
   const username = req.body.username
   const friend = req.body.friend
@@ -330,6 +333,7 @@ app.post('/api/addFriend', (req, res) => {
           if (!already) {
             user.friends.push(friend)
             res.json({
+              list: user.friends,
               message: friend + ' has been added to your friendlist'
             })
           } else {
@@ -544,6 +548,8 @@ app.post('/api/sendMess', (req, res) => {
     const conv = {
       from: from,
       to: to,
+      from_seen: true,
+      to_seen: false,
       content: [message]
     }
     conversations.push(conv)

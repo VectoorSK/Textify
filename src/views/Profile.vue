@@ -62,7 +62,7 @@ export default {
       this.background = this.$session.get('background')
       this.description = this.$session.get('description')
     } else {
-      this.$router.push('login')
+      this.$router.push('/')
     }
   },
   data () {

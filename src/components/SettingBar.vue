@@ -6,6 +6,7 @@
         <v-img v-bind:src="path"></v-img>
       </v-avatar>
       <span class="mr-2">{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
+      <!-- SELECT FRIEND -->
       <v-col cols="4" class="ma-0 pa-0">
         <v-select
           v-if="friend === null"
@@ -19,7 +20,7 @@
       </v-col>
       <v-spacer></v-spacer>
       <!-- SHOW PROFILE -->
-      <v-dialog v-model="dialogFriend" max-width="400" class="pa-0">
+      <v-dialog v-if="friend !== null" v-model="dialogFriend" max-width="400" class="pa-0">
         <template v-slot:activator="{ on }">
           <v-btn icon outlined :color="color" v-on="on" class="mr-2">
             <v-icon :color="color">person</v-icon>
