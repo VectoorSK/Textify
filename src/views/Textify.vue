@@ -11,11 +11,12 @@
         min-width="550"
         color="blue-grey lighten-4"
       >
+      <!-- {{ 'from_seen = ' + from_seen + ' | to_seen = ' + to_seen }} -->
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
             <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" :color="color"></SettingBar>
-            <Conversation :conversation="conversation" :user="user" :color="color"></Conversation>
+            <Conversation :conversation="conversation" :to_seen="to_seen" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
         <v-row v-if="friendLoad !== null" align="center" class="my-0 mx-2 pa-0">
@@ -127,6 +128,8 @@ export default {
   data: () => ({
     user: '',
     to: '',
+    from_seen: null,
+    to_seen: null,
     userFriends: [],
     friendLoad: null,
     url: 'http://localhost:4000', // ''
@@ -159,6 +162,8 @@ export default {
         console.log(res.data)
         this.conversation = res.data.content
         this.friendLoad = res.data.To
+        this.from_seen = res.data.from_seen
+        this.to_seen = res.data.to_seen
       } else if (res.data.status === 0) {
         console.log('NOT FOUND')
         this.conversation = []
@@ -182,6 +187,7 @@ export default {
       )
       if (res) {
         console.log(res.data.message)
+        this.to_seen = false
       }
     },
     sendMessage () {

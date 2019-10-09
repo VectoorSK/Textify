@@ -397,7 +397,14 @@ app.post('/api/getConvList', (req, res) => {
 
   if (convs) {
     for (const conv of convs) {
-      const item = conv.from === username ? conv.to : conv.from
+      const friendname = conv.from === username ? conv.to : conv.from
+      let notif = false
+      if (conv.from === username) {
+        notif = !conv.from_seen
+      } else if (conv.to === username) {
+        notif = !conv.to_seen
+      }
+      const item = { name: friendname, notif: notif }
       convList.push(item)
     }
   }
@@ -499,12 +506,20 @@ app.post('/api/getConv', (req, res) => {
   } : {}
 
   if (conv) {
+    for (const c of conversations) {
+      if ((c.from === user1 && c.to === user2) || (c.from === user2 && c.to === user1)) {
+        c.from_seen = c.from === user1 ? true : c.from_seen
+        c.to_seen = c.to === user1 ? true : c.to_seen
+      }
+    }
     res.json({
       status: 1,
       message: 'conversation trouvé',
       content: conv.content,
       From: From,
-      To: to
+      To: to,
+      from_seen: conv.from === user1 ? conv.from_seen : conv.to_seen,
+      to_seen: conv.to === user1 ? conv.from_seen : conv.to_seen
     })
   } else if (From && To) {
     res.json({
@@ -532,6 +547,14 @@ app.post('/api/sendMess', (req, res) => {
   if (conv) {
     conv.content.push(message)
 
+    for (const c of conversations) {
+      if (c.from === from && c.to === to) {
+        c.to_seen = false
+      } else if (c.from === to && c.to === from) {
+        c.from_seen = false
+      }
+    }
+
     if (message.type === 'pos') {
       let loadId = conv.content.findIndex(m => m.type === 'load')
       while (loadId !== -1) {
@@ -545,14 +568,14 @@ app.post('/api/sendMess', (req, res) => {
     })
   } else if (userTo && userFrom) {
     // on crée une nouvelle conv
-    const conv = {
+    const mess = {
       from: from,
       to: to,
-      from_seen: true,
+      from_seen: false,
       to_seen: false,
       content: [message]
     }
-    conversations.push(conv)
+    conversations.push(mess)
     res.json({
       message: 'une nouvelle discution à été créee'
     })

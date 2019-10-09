@@ -114,6 +114,10 @@
             </template>
             <span>{{ mess.from }}</span>
           </v-tooltip>
+          <!-- <span v-if="id === conversation.length - 1" class="ma-0 px-3"> {{ to_seen ? 'vu' : 'pas vu' }}</span> -->
+        </v-list-item>
+        <v-list-item class="ma-0 pa-0" dense :color="color">
+          <span v-if="lastMessage === 'to'" class="ma-0 px-3"> {{ to_seen ? 'vu' : 'pas vu' }}</span>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -124,6 +128,7 @@
 export default {
   props: {
     conversation: Array,
+    to_seen: Boolean,
     user: String,
     color: String
   },
@@ -150,6 +155,9 @@ export default {
   computed: {
     nbMessage: function () {
       return this.conversation.length
+    },
+    lastMessage: function () {
+      return 'to'
     }
   }
 }

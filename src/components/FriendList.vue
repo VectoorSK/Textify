@@ -10,22 +10,23 @@
         <FriendProfile :friend="friend" class="pa-0"></FriendProfile>
       </v-dialog>
       <v-list-item-group>
-        <v-list-item v-for="(friend, id) in friendlist" :key="id" @click="openProfile(friend.username)" class="pa-0">
+        <v-list-item v-for="(frd, id) in friendlist" :key="id" @click="openProfile(frd.username)" class="pa-0">
           <v-row align="center" class="ma-0">
             <v-col cols="1">
               <v-avatar>
-                <img :src="require('../../public/avatars/' + friend.avatar + '.png')">
+                <img :src="require('../../public/avatars/' + frd.avatar + '.png')">
               </v-avatar>
             </v-col>
             <v-col cols="5" lg="4" xl="3">
-              <span class="mx-4">{{ friend.name + ' ' + friend.surname }}</span>
+              <span class="mx-4">{{ frd.name + ' ' + frd.surname }}</span>
             </v-col>
-            <span class="mx-0">{{ friend.username }}</span>
+            <span class="mx-0">{{ frd.username }}</span>
             <v-spacer></v-spacer>
-            <v-btn icon small @click="goToTextify(friend.username)" class="mr-2">
-              <v-icon :color="friend.isConv ? color : ''" small>fa-comments</v-icon>
+            <v-icon v-if="frd.notif" :color="color" small class="mr-2">mdi-comment-alert</v-icon>
+            <v-btn icon small @click="goToTextify(frd.username)" class="mr-2">
+              <v-icon :color="frd.isConv ? color : ''" small>fa-comments</v-icon>
             </v-btn>
-            <v-btn icon small @click="delFriend(friend.username)" class="mr-2">
+            <v-btn icon small @click="delFriend(frd.username)" class="mr-2">
               <v-icon color="red">clear</v-icon>
             </v-btn>
           </v-row>
@@ -67,6 +68,7 @@ export default {
       })
       if (res) {
         this.friend = res.data.friend
+        console.log(this.friend)
         this.dialogFriend = true
       }
     }

@@ -20,6 +20,7 @@
               :error="err"
               :userlist="userList['users']"
               :user="userload"
+              :color="color"
               v-on:update-color="updateColor"
               v-on:add-friend="addFriend"
             ></FriendBar>
@@ -98,7 +99,8 @@ export default {
             name: name,
             surname: surname,
             username: username,
-            isConv: false
+            isConv: false,
+            notif: false
           })
           this.friendList.sort(this.byPseudo)
         })
@@ -127,8 +129,14 @@ export default {
       )
       if (response) {
         for (const friend of this.friendList) {
-          const isConv = response.data.convList.find(u => u === friend.username)
-          friend.isConv = !!isConv
+          // const isConv = response.data.convList.find(u => u.name === friend.username)
+          // friend.isConv = !!isConv
+          for (const item of response.data.convList) {
+            if (friend.username === item.name) {
+              friend.isConv = true
+              friend.notif = item.notif
+            }
+          }
         }
       }
     },

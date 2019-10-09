@@ -9,6 +9,7 @@
         </template>
         <v-card class="py-2 px-5">
           <v-text-field
+            :color="color"
             v-model="newFriend"
             label="Pseudo"
             :error="error !== '' && true"
@@ -16,12 +17,12 @@
           ></v-text-field>
           <v-row>
             <v-btn
-              color="success"
+              :color="color"
               class="mx-auto mt-2"
               @click="checkUser(newFriend)"
             >
-              <v-icon class="mr-2">person_add</v-icon>
-              ADD
+              <v-icon color="white" class="mr-2">person_add</v-icon>
+              <span class="white--text">ADD</span>
             </v-btn>
           </v-row>
         </v-card>
@@ -37,7 +38,8 @@ export default {
     userlist: Array,
     error: String,
     user: String,
-    open: Boolean
+    open: Boolean,
+    color: String
   },
   data: () => ({
     avatar: 1,

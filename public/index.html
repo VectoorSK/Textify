@@ -4,12 +4,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="icon" id="icon" href="./icons/textify-logo-512DA8.ico">
+    <!-- <link rel="icon" :href="<%= BASE_URL %>icons/textify-logo-512DA8.ico"> -->
     <title>Textify</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
     <script src="//static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+    <script type="text/JavaScript">
+      let link = document.getElementById('icon')
+      link.href = link.href.slice(0, -10) + '512DA8.ico'
+    </script>
   </head>
   <body>
     <noscript>
