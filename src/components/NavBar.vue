@@ -10,13 +10,13 @@
       </v-expand-x-transition>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
-      <v-btn text @click="log" router to="/login">
-        <v-icon small class="mr-1">{{ logged ? 'fa-sign-out-alt' : 'fa-sign-in-alt' }}</v-icon> <!-- exit_to_app -->
-        <span>{{ logged ? 'Log Out' : 'Log In' }}</span>
+      <v-btn v-if="logged" text @click="log" router to="/login">
+        <v-icon small class="mr-1">fa-sign-out-alt</v-icon> <!-- exit_to_app -->
+        <span>Log Out</span>
       </v-btn>
     </v-app-bar>
 
-    <v-footer fixed class="grey lighten-4">
+    <v-footer app absolute inset class="grey lighten-4">
       <!-- CHANGE COLOR MENU -->
       <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenuFooter">
         <template v-slot:activator="{ on: menu }">
@@ -37,16 +37,22 @@
         <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
       </v-menu>
       <v-spacer></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
       <v-btn fab depressed color="grey lighten-4" class="pt-2" router to="/">
         <v-img :src="require('../../public/logos/textify-logo-' + this.color.slice(-6) + '.png')" max-width="35" class="ma-1 pa-0"></v-img>
       </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn v-if="!navDrawer" small icon disabled>
-        <v-icon></v-icon>
-      </v-btn>
+      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer v-if="navDrawer"></v-spacer>
     </v-footer>
 
-    <v-navigation-drawer app v-model="navDrawer" v-if="logged" :color="color">
+    <v-navigation-drawer app disable-resize-watcher :temporary="false" v-model="navDrawer" v-if="logged" :color="color">
       <v-col align="center">
         <v-dialog width="60vw" v-model="dialog">
           <template v-slot:activator="{ on }">
@@ -80,7 +86,13 @@
               <v-img v-else max-width="22" :src="link.img"></v-img>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ link.text }}</v-list-item-title>
+              <v-list-item-title>
+                <v-row class="mx-0" align="center">
+                <span>{{ link.text }}</span>
+                <v-spacer></v-spacer>
+                <v-btn v-if="link.text === 'Friends' && notif > 0" icon small class="white ma-0 pa-0" :color="color">{{ notif }}</v-btn>
+                </v-row>
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -119,9 +131,11 @@ export default {
     logged: false,
     usrLogged: {
       avatar: 0,
+      username: '',
       name: '',
       surname: ''
     },
+    notif: 0,
     url: 'http://localhost:4000',
     navDrawer: true,
     links: [
@@ -144,6 +158,11 @@ export default {
       if (res.data.status === 1) {
         this.$session.set('avatar', i)
         this.usrLogged.avatar = this.$session.get('avatar')
+        const current = this.$router.currentRoute.path
+        if (current.includes('profile')) {
+          this.$router.push('home')
+          this.$router.push(current)
+        }
       }
       this.dialog = false
     },
@@ -159,8 +178,24 @@ export default {
         const current = this.$router.currentRoute.path
         if (!current.includes('profile')) {
           this.$router.push('profile')
-          this.$router.push(current)
+        } else {
+          this.$router.push('home')
         }
+        this.$router.push(current)
+      }
+    },
+    async getNotif () {
+      const res = await this.axios.post(this.url + '/api/getConvList',
+        {
+          username: this.usrLogged.username
+        }
+      )
+      if (res) {
+        let notif = 0
+        for (const item of res.data.convList) {
+          notif += item.notif ? 1 : 0
+        }
+        this.notif = notif
       }
     },
     log () {
@@ -184,9 +219,11 @@ export default {
     if (this.$session.exists()) {
       this.logged = true
       this.usrLogged.avatar = this.$session.get('avatar')
+      this.usrLogged.username = this.$session.get('username')
       this.usrLogged.name = this.$session.get('name')
       this.usrLogged.surname = this.$session.get('surname')
       this.color = this.$session.get('colorApp')
+      this.getNotif()
     } else {
       this.logged = false
     }
@@ -196,9 +233,11 @@ export default {
       if (this.$session.exists()) {
         this.logged = true
         this.usrLogged.avatar = this.$session.get('avatar')
+        this.usrLogged.username = this.$session.get('username')
         this.usrLogged.name = this.$session.get('name')
         this.usrLogged.surname = this.$session.get('surname')
         this.color = this.$session.get('colorApp')
+        setTimeout(() => { this.getNotif() }, 0)
       } else {
         this.logged = false
         this.color = '#512DA8'

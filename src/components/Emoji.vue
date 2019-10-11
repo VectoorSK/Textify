@@ -1,19 +1,21 @@
 <template>
-  <v-card max-height="33vh" max-width="28vw" min-width="300" class="overflow-hidden">
+  <v-card height="240" max-width="28vw" min-width="300" class="overflow-hidden">
     <v-tabs
+      v-model="activeTab"
       dark
       vertical
-      height="33vh"
-      background-color="primary lighten-5"
+      small
+      height="240"
+      background-color="grey lighten-3"
+      :slider-color="color"
+      slider-size="4"
     >
-      <v-tabs-slider color="primary"></v-tabs-slider>
       <v-tab
         v-for="(cat, id) in catSmileys"
         :key="id"
         :href="`#tab-${id}`"
-        class="ma-0 pa-0"
       >
-        {{ cat.img }}
+        <v-icon :color="parseInt(activeTab.slice(-1)) === id ? color : 'grey lighten-1'">{{ cat.icon }}</v-icon>
       </v-tab>
       <v-tab-item
         v-for="(cat, id) in catSmileys"
@@ -54,17 +56,21 @@
 
 <script>
 export default {
+  props: {
+    color: String
+  },
   data: () => ({
+    activeTab: 'tab-0',
     catSmileys: [
-      { name: 'people', img: '🙂' },
-      { name: 'animals', img: '🐵' },
-      { name: 'nature', img: '🌴' },
-      { name: 'foods', img: '🍗' },
-      { name: 'activities', img: '🛹' },
-      { name: 'places', img: '🏍️' },
-      { name: 'objects', img: '💻' },
-      { name: 'symbols', img: '️❤️' },
-      { name: 'symbols2', img: '️🆒' }
+      { name: 'people', img: '🙂', icon: 'mdi-emoticon' },
+      { name: 'animals', img: '🐵', icon: 'mdi-cat' },
+      { name: 'nature', img: '🌴', icon: 'mdi-palm-tree' },
+      { name: 'foods', img: '🍗', icon: 'mdi-food' },
+      { name: 'activities', img: '🛹', icon: 'mdi-basketball' },
+      { name: 'places', img: '🏍️', icon: 'mdi-car-sports' },
+      { name: 'objects', img: '💻', icon: 'mdi-laptop' },
+      { name: 'symbols', img: '️❤️', icon: 'mdi-heart' },
+      { name: 'symbols2', img: '️🆒', icon: 'mdi-new-box' }
     ],
     people: [
       '🙂', '🙃', '😃', '😀', '😄', '😁', '😊', '😇', '😅', '😂', '😆', '🤣',

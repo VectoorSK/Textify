@@ -23,7 +23,7 @@
       <v-dialog v-if="friend !== null" v-model="dialogFriend" max-width="400" class="pa-0">
         <template v-slot:activator="{ on }">
           <v-btn icon outlined :color="color" v-on="on" class="mr-2">
-            <v-icon :color="color">person</v-icon>
+            <v-icon small :color="color">mdi-account-card-details-outline</v-icon>
           </v-btn>
         </template>
         <FriendProfile :friend="friend" class="pa-0"></FriendProfile>

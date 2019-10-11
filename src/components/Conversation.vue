@@ -30,6 +30,17 @@
             {{ getDateHours(mess.date) + ':'
             +  getDateMins(mess.date) }}
           </span>
+          <!-- <v-badge
+            :color="color"
+            bottom
+            overlap
+            style="min-width: 100%"
+          >
+            <template v-slot:badge>
+              <v-icon v-if="id === lastMessageFromYou" dark>
+                {{ to_seen ? 'mdi-eye' : 'mdi-eye-off' }}
+              </v-icon>
+            </template> -->
           <!-- MESSAGES -->
           <v-scroll-y-transition>
             <!-- text messages -->
@@ -92,6 +103,8 @@
             <!-- big smiley -->
             <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
           </v-scroll-y-transition>
+          <!-- </v-badge> -->
+
           <!-- heure (droite) -->
           <span
             v-if="mess.sender !== user && mess.type !== 'smiley'"
@@ -114,10 +127,13 @@
             </template>
             <span>{{ mess.from }}</span>
           </v-tooltip>
-          <!-- <span v-if="id === conversation.length - 1" class="ma-0 px-3"> {{ to_seen ? 'vu' : 'pas vu' }}</span> -->
+          <template v-if="id === lastMessageFromYou" v-slot:badge>
+            <v-icon class="ma-0 px-3">{{ to_seen ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
+          </template>
         </v-list-item>
-        <v-list-item class="ma-0 pa-0" dense :color="color">
-          <span v-if="lastMessage === 'to'" class="ma-0 px-3"> {{ to_seen ? 'vu' : 'pas vu' }}</span>
+        <v-list-item dense :color="color">
+          <v-spacer></v-spacer>
+          <v-icon class="ma-0 px-3" small>{{ to_seen ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -157,7 +173,20 @@ export default {
       return this.conversation.length
     },
     lastMessage: function () {
-      return 'to'
+      if (this.conversation.length > 0) {
+        return this.conversation[this.conversation.length - 1].sender === this.user ? 'to' : 'from'
+      } else {
+        return 'from'
+      }
+    },
+    lastMessageFromYou: function () {
+      let id = 0
+      for (const [idx, mess] of this.conversation.entries()) {
+        if (mess.sender === this.user) {
+          id = idx
+        }
+      }
+      return id
     }
   }
 }

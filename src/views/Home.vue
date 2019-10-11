@@ -9,7 +9,7 @@
                 <v-img v-if="animate" :src="require('../../public/logos/textify-logo-' + color.slice(-6) +'.png')" max-width="55" class="ml-3"></v-img>
               </v-scale-transition>
               <v-slide-x-transition>
-                <h1 v-if="animate" class="display-2 font-weight-light mr-3 ml-n3 mt-2 mb-n2 pr-10" :class="colorText">extify</h1>
+                <h1 v-if="animate" class="display-2 font-weight-light mr-3 ml-n3 mt-2 mb-n2 pr-10" :style="'color:' + color">extify</h1>
               </v-slide-x-transition>
             </v-row>
           </div>
@@ -62,7 +62,7 @@
             Created by
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <a v-on="on" class="link" :class="colorText" target="_blank" href="https://github.com/Aetaugan">Camille REGIS</a>
+                <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/Aetaugan">Camille REGIS</a>
               </template>
               <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
               <span>Visit github</span>
@@ -70,11 +70,14 @@
             and
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <a v-on="on" class="link" :class="colorText" target="_blank" href="https://github.com/VectoorSK">Victor BELIN</a>
+                <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/VectoorSK">Victor BELIN</a>
               </template>
               <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
               <span>Visit github</span>
             </v-tooltip>
+          </p>
+          <p class="text-right subtitle">
+            <v-icon small :color="color">mdi-copyright</v-icon><span :style="'color:' + color">2019</span>
           </p>
         </v-card>
       </v-col>
@@ -113,10 +116,25 @@ export default {
     }
   },
   computed: {
-    colorText: function () {
+    /* colorText: function () {
       const clr = this.color
-      return clr === '#4ADF3E' ? 'light-green--text text--lighten-1' : clr === '#13CF13' ? 'light-green--text text--darken-1' : clr === '#4CAF50' ? 'green--text' : clr === '#20CEF5' ? 'light-blue--text text--lighten-2' : clr === '#00ACEE' ? 'cyan--text' : clr === '#3B5998' ? 'indigo--text' : clr === '#FFC300' ? 'amber--text text--darken-1' : clr === '#FF7E29' ? 'deep-orange--text text--lighten-1' : clr === '#FF6306' ? 'orange--text text--accent-4' : clr === '#E68585' ? 'red--text text--accent-1' : clr === '#FA3C4C' ? 'red--text text--lighten-1' : clr === '#F44336' ? 'red--text' : clr === '#FF5CA1' ? 'pink--text text--lighten-2' : clr === '#CE1980' ? 'pink--text text--darken-2' : clr === '#512DA8' ? 'deep-purple--text text--darken-2' : 'black--text'
-    }
+      return clr === '#4ADF3E' ? 'light-green--text text--lighten-1'
+        : clr === '#13CF13' ? 'light-green--text text--darken-1'
+          : clr === '#4CAF50' ? 'green--text'
+            : clr === '#20CEF5' ? 'light-blue--text text--lighten-2'
+              : clr === '#00ACEE' ? 'cyan--text'
+                : clr === '#3B5998' ? 'indigo--text'
+                  : clr === '#FFC300' ? 'amber--text text--darken-1'
+                    : clr === '#FF7E29' ? 'deep-orange--text text--lighten-1'
+                      : clr === '#FF6306' ? 'orange--text text--accent-4'
+                        : clr === '#E68585' ? 'red--text text--accent-1'
+                          : clr === '#FA3C4C' ? 'red--text text--lighten-1'
+                            : clr === '#F44336' ? 'red--text'
+                              : clr === '#FF5CA1' ? 'pink--text text--lighten-2'
+                                : clr === '#CE1980' ? 'pink--text text--darken-2'
+                                  : clr === '#512DA8' ? 'deep-purple--text text--darken-2'
+                                    : 'black--text'
+    } */
   }
 }
 </script>

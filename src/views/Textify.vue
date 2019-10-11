@@ -11,7 +11,7 @@
         min-width="550"
         color="blue-grey lighten-4"
       >
-      <!-- {{ 'from_seen = ' + from_seen + ' | to_seen = ' + to_seen }} -->
+        <!-- {{ 'from_seen = ' + from_seen + ' | to_seen = ' + to_seen }} -->
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
             <!-- FENETRE DE CONVERSATION -->
@@ -22,21 +22,36 @@
         <v-row v-if="friendLoad !== null" align="center" class="my-0 mx-2 pa-0">
           <v-col cols="2" class="ma-0 pa-0">
             <!-- select smiley button -->
-            <v-menu top offset-y max-height="33vh" max-width="28vw" min-width="300" :close-on-content-click="false">
+            <v-menu top offset-y height="240" max-width="28vw" min-width="300" :close-on-content-click="false" v-model="emojiTabOpen">
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
+                <v-btn icon
+                  v-on="on"
+                  :color="emojiTabOpen || colorTab ? color : ''"
+                  @mouseover="colorTab = color"
+                  @mouseout="colorTab = ''"
+                >
                   <v-icon>mdi-emoticon</v-icon>
                 </v-btn>
               </template>
               <!-- Emoji pop up -->
-              <EmojiTab v-model="smiley" v-on:addSmiley="message += smiley"></EmojiTab>
+              <EmojiTab :color="color" v-model="smiley" v-on:addSmiley="message += smiley"></EmojiTab>
             </v-menu>
-          <!-- send position button -->
-            <v-btn icon @click="sendPos" :active-class="color">
+            <!-- send position button -->
+            <v-btn icon
+              @click="sendPos"
+              :color="colorLocation"
+              @mouseover="colorLocation = color"
+              @mouseout="colorLocation = ''"
+            >
               <v-icon>my_location</v-icon>
             </v-btn>
-          <!-- send picture button -->
-            <v-btn icon @click="inputType === 'text' ? inputType = 'file' : inputType = 'text'">
+            <!-- send picture button -->
+            <v-btn icon
+              @click="inputType === 'text' ? inputType = 'file' : inputType = 'text'"
+              :color="colorPic"
+              @mouseover="colorPic = color"
+              @mouseout="colorPic = ''"
+            >
               <v-icon>{{ inputType === 'text' ? 'add_photo_alternate' : 'subject' }}</v-icon>
             </v-btn>
           </v-col>
@@ -49,7 +64,6 @@
               append-outer-icon="send"
               clearable
               label="Message"
-              @click="showSmiley = !showSmiley"
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
               @keyup.enter="sendMessage"
@@ -81,9 +95,9 @@
       </v-card>
     </v-card>
     <!-- TEST FILE -->
-    <v-card>
+    <!--  <v-card>
       {{ file }}
-    </v-card>
+    </v-card> -->
     <!-- <v-card
       flat
       class="mx-auto my-2 pa-2"
@@ -138,14 +152,17 @@ export default {
     message2: '',
     file: undefined,
     img: null,
+    colorPic: '',
     dialog: false,
     currentSmiley: '🙂',
     smiley: '',
-    showSmiley: false,
+    emojiTabOpen: false,
+    colorTab: '',
     marker: false,
     latitude: null,
     longitude: null,
     town: '',
+    colorLocation: '',
     color: '#512DA8',
     conversation: []
   }),
@@ -187,6 +204,7 @@ export default {
       )
       if (res) {
         console.log(res.data.message)
+        this.from_seen = true
         this.to_seen = false
       }
     },

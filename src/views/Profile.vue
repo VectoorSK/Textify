@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="elevation-12 mx-auto" max-width="400">
+    <v-card class="elevation-2 mx-auto" max-width="400">
       <v-img
         class="white--text"
         height="200px"
@@ -19,7 +19,7 @@
             >
           </v-avatar>
           <v-spacer></v-spacer>
-          <v-btn @click="settings" fab small outlined :color="setting ? 'grey lighten-1' : 'white'" dark>
+          <v-btn @click="settings" fab small outlined :color="background > 15 ? setting ? 'grey lighten-1' : 'grey darken-1' : setting ? 'grey lighten-2' : 'white'" dark>
             <v-icon>fa-cogs</v-icon>
           </v-btn>
           <v-list-item
@@ -28,11 +28,15 @@
             dark
           >
             <v-list-item-content>
-              <v-list-item-title class="title">{{ this.$session.get('username') }}</v-list-item-title>
-              <v-list-item-subtitle>{{ this.$session.get('email') }}</v-list-item-subtitle>
+              <v-list-item-title class="title" :class="background > 15 ? 'black--text' : ''">
+                {{ this.$session.get('username') }}
+              </v-list-item-title>
+              <v-list-item-subtitle :class="background > 15 ? 'black--text' : ''">
+                {{ this.$session.get('email') }}
+              </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-list-item-action-text>{{ this.$session.get('birthday') }}</v-list-item-action-text>
+              <v-list-item-action-text class="mb-3" :class="background > 15 ? 'black--text' : ''">{{ this.$session.get('birthday') }}</v-list-item-action-text>
             </v-list-item-action>
           </v-list-item>
         </v-row>
@@ -93,6 +97,11 @@ export default {
     },
     nbLines: function () {
       return this.descMultLine.length
+    }
+  },
+  watch: {
+    '$route': function (to, from) {
+      this.avatar = this.$session.get('avatar')
     }
   }
 }

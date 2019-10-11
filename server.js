@@ -549,9 +549,11 @@ app.post('/api/sendMess', (req, res) => {
 
     for (const c of conversations) {
       if (c.from === from && c.to === to) {
+        c.from_seen = true
         c.to_seen = false
       } else if (c.from === to && c.to === from) {
         c.from_seen = false
+        c.to_seen = true
       }
     }
 
@@ -571,7 +573,7 @@ app.post('/api/sendMess', (req, res) => {
     const mess = {
       from: from,
       to: to,
-      from_seen: false,
+      from_seen: true,
       to_seen: false,
       content: [message]
     }
