@@ -11,12 +11,12 @@
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-btn v-if="logged" text @click="log" router to="/login">
-        <v-icon small class="mr-1">fa-sign-out-alt</v-icon> <!-- exit_to_app -->
         <span>Log Out</span>
+        <v-icon small class="ml-1">fa-sign-out-alt</v-icon> <!-- exit_to_app -->
       </v-btn>
     </v-app-bar>
 
-    <v-footer app absolute inset class="grey lighten-4">
+    <v-footer app fixed inset class="grey lighten-4">
       <!-- CHANGE COLOR MENU -->
       <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenuFooter">
         <template v-slot:activator="{ on: menu }">
@@ -24,10 +24,13 @@
             <template v-slot:activator="{ on: tooltip }">
               <div v-on="{ ...menu, ...tooltip }">
                 <v-scale-transition :hide-on-leave="navDrawer ? true : false">
-                  <v-btn v-if="!navDrawer" small icon outlined :color="color" >
+                  <v-btn v-if="!navDrawer" small icon outlined :color="color" class="mt-2 mb-n2 mr-2 ml-n2">
                     <v-icon>mdi-palette</v-icon>
                   </v-btn>
                 </v-scale-transition>
+                <v-btn v-if="navDrawer" small icon>
+                  <v-icon></v-icon>
+                </v-btn>
               </div>
             </template>
             <span>Change color app</span>
@@ -37,19 +40,10 @@
         <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
       </v-menu>
       <v-spacer></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
       <v-btn fab depressed color="grey lighten-4" class="pt-2" router to="/">
         <v-img :src="require('../../public/logos/textify-logo-' + this.color.slice(-6) + '.png')" max-width="35" class="ma-1 pa-0"></v-img>
       </v-btn>
-      <v-spacer v-if="navDrawer"></v-spacer>
-      <v-spacer v-if="navDrawer"></v-spacer>
+      <v-spacer></v-spacer>
     </v-footer>
 
     <v-navigation-drawer app disable-resize-watcher :temporary="false" v-model="navDrawer" v-if="logged" :color="color">
