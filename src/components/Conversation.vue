@@ -1,8 +1,9 @@
 <template>
+<v-container>
   <v-card
     flat
     class="overflow-y-auto"
-    height="60vh"
+    height="55vh"
     ref="mylist"
   >
     <v-list color="grey lighten-5" class="py-0">
@@ -52,7 +53,9 @@
               style="border-radius:20px"
               :style="'background-color: ' + color"
             >
-              {{ mess.content }}
+              <span v-for="(lines, id) in messSplit(mess.content)" :key="id">
+                {{ lines }}<br v-if="id !== messSplit(mess.content).length - 1"/>
+              </span>
             </v-card>
             <!-- position -->
             <v-card
@@ -131,13 +134,14 @@
             <v-icon class="ma-0 px-3">{{ to_seen ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
           </template>
         </v-list-item>
-        <v-list-item dense :color="color">
+        <v-list-item v-if="conversation.length > 0" dense :color="color" >
           <v-spacer></v-spacer>
           <v-icon class="ma-0 px-3" small>{{ to_seen ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
         </v-list-item>
       </v-list-item-group>
     </v-list>
   </v-card>
+</v-container>
 </template>
 
 <script>
@@ -158,6 +162,9 @@ export default {
     getDateMins (str) {
       let date = new Date(str)
       return ('0' + date.getMinutes()).slice(-2)
+    },
+    messSplit (mess) {
+      return mess.split('\n')
     },
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight

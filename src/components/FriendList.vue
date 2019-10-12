@@ -21,12 +21,23 @@
               </v-avatar>
               <span class="mx-4">{{ frd.name + ' ' + frd.surname }}</span>
             </v-col>
-            <span class="mx-0">{{ frd.username }}</span>
+            <v-col cols="3">
+              <span class="mx-0">{{ frd.username }}</span>
+            </v-col>
             <v-spacer></v-spacer>
             <v-icon v-if="frd.notif" :color="color" small class="mr-2">mdi-comment-alert</v-icon>
-            <v-icon v-if="frd.isConv" :color="color" small class="mr-2">fa-comments</v-icon>
-            <v-btn icon small @click.stop="delFriend(frd.username)" class="mr-2">
-              <v-icon color="red">clear</v-icon>
+            <v-icon v-if="frd.isConv && !frd.notif" :color="color" small class="mr-2">fa-comments</v-icon>
+            <v-spacer></v-spacer>
+            <v-btn
+              icon
+              small
+              class="mr-2"
+              @click.stop="delFriend(frd.username)"
+              @mouseover="colorClear = id"
+              @mouseout="colorClear = -1"
+              color="red"
+            >
+              <v-icon :small="colorClear !== id" :color="colorClear === id ? 'red' : ''">clear</v-icon>
             </v-btn>
           </v-row>
         </v-list-item>
@@ -49,6 +60,7 @@ export default {
   data: () => ({
     dialogFriend: false,
     friend: {},
+    colorClear: -1,
     url: 'http://localhost:4000' // ''
   }),
   methods: {
@@ -62,19 +74,14 @@ export default {
       this.$emit('del-friend', username)
     },
     async openProfile (username) {
-      const res = await this.axios.post(this.url + '/api/getFriendInfo', {
+      const res = await this.axios.post(this.url + '/api/getNotif', {
         username: username
       })
       if (res) {
         this.friend = res.data.friend
-        console.log(this.friend)
         this.dialogFriend = true
       }
     }
-  },
-  watch: {
-  },
-  computed: {
   }
 }
 

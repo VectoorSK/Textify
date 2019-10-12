@@ -84,7 +84,7 @@
                 <v-row class="mx-0" align="center">
                 <span>{{ link.text }}</span>
                 <v-spacer></v-spacer>
-                <v-btn v-if="link.text === 'Friends' && notif > 0" icon small class="white ma-0 pa-0" :color="color">{{ notif }}</v-btn>
+                <v-btn v-if="link.text === 'Friends' && notif > 0" icon x-small class="white ma-0 pa-0" :color="color">{{ notif }}</v-btn>
                 </v-row>
               </v-list-item-title>
             </v-list-item-content>
@@ -111,6 +111,21 @@
         </div>
       </template>
     </v-navigation-drawer>
+
+    <v-snackbar
+      v-model="snackbar"
+      :color="color"
+      class="white--text"
+    >
+      {{ snackbarText }}
+      <v-btn
+        color="white"
+        text
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </nav>
 </template>
 
@@ -123,6 +138,8 @@ export default {
   },
   data: () => ({
     logged: false,
+    snackbar: false,
+    snackbarText: '',
     usrLogged: {
       avatar: 0,
       username: '',
@@ -178,18 +195,14 @@ export default {
         this.$router.push(current)
       }
     },
-    async getNotif () {
-      const res = await this.axios.post(this.url + '/api/getConvList',
+    async getNotif (username) {
+      const res = await this.axios.post(this.url + '/api/getNotif',
         {
-          username: this.usrLogged.username
+          username: username
         }
       )
       if (res) {
-        let notif = 0
-        for (const item of res.data.convList) {
-          notif += item.notif ? 1 : 0
-        }
-        this.notif = notif
+        this.notif = res.data.notif
       }
     },
     log () {
@@ -211,13 +224,13 @@ export default {
   },
   mounted () {
     if (this.$session.exists()) {
-      this.logged = true
       this.usrLogged.avatar = this.$session.get('avatar')
       this.usrLogged.username = this.$session.get('username')
       this.usrLogged.name = this.$session.get('name')
       this.usrLogged.surname = this.$session.get('surname')
       this.color = this.$session.get('colorApp')
-      this.getNotif()
+      this.logged = true
+      this.getNotif(this.usrLogged.username)
     } else {
       this.logged = false
     }
@@ -225,13 +238,17 @@ export default {
   watch: {
     '$route': function (to, from) {
       if (this.$session.exists()) {
-        this.logged = true
         this.usrLogged.avatar = this.$session.get('avatar')
         this.usrLogged.username = this.$session.get('username')
         this.usrLogged.name = this.$session.get('name')
         this.usrLogged.surname = this.$session.get('surname')
         this.color = this.$session.get('colorApp')
-        setTimeout(() => { this.getNotif() }, 0)
+        if (this.logged === false) {
+          this.snackbarText = 'Hello ' + this.usrLogged.username + '. Welcome back!'
+          this.snackbar = true
+        }
+        this.logged = true
+        this.getNotif(this.usrLogged.username)
       } else {
         this.logged = false
         this.color = '#512DA8'

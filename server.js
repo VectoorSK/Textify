@@ -257,6 +257,51 @@ const conversations = [
         date: new Date()
       }
     ]
+  },
+  {
+    from: 'Elic',
+    to: 'Aetaugan',
+    from_seen: true,
+    to_seen: false,
+    content: [
+      {
+        type: 'text',
+        content: 'Hey! Ca va ? 😊',
+        sender: 'Elic',
+        from: 'Rueil Malmaison - 92500 (France)',
+        date: new Date()
+      }
+    ]
+  },
+  {
+    from: 'Sima',
+    to: 'Aetaugan',
+    from_seen: true,
+    to_seen: false,
+    content: [
+      {
+        type: 'text',
+        content: 'Hey! Ca va ? 😊',
+        sender: 'Sima',
+        from: 'Rueil Malmaison - 92500 (France)',
+        date: new Date()
+      }
+    ]
+  },
+  {
+    from: 'Nanami',
+    to: 'Aetaugan',
+    from_seen: true,
+    to_seen: false,
+    content: [
+      {
+        type: 'text',
+        content: 'Hey! Ca va ? 😊',
+        sender: 'Nanami',
+        from: 'Rueil Malmaison - 92500 (France)',
+        date: new Date()
+      }
+    ]
   }
 ]
 
@@ -275,13 +320,27 @@ app.post('/api/loadUser', (req, res) => {
 })
 
 app.post('/api/getInfo', (req, res) => {
-  const user = users.find(u => u.username === req.body.username)
-  if (user) {
+  const { username, friendname } = req.body
+  const friend = users.find(u => u.username === friendname)
+  const conv = conversations.find(c => (c.from === username && c.to === friendname) || (c.from === friendname && c.to === username))
+
+  if (friend) {
+    const reqFriend = {
+      avatar: friend.avatar,
+      name: friend.name,
+      surname: friend.surname
+    }
+    const isConv = !!conv
+    let notif
+    if (conv) {
+      notif = !!((conv.from === username && !conv.from_seen) || (conv.to === username && !conv.to_seen))
+    }
+
     res.json({
       message: 'found',
-      avatar: user.avatar,
-      name: user.name,
-      surname: user.surname
+      friend: reqFriend,
+      isConv: isConv,
+      notif: notif
     })
   } else {
     res.json({
@@ -290,7 +349,7 @@ app.post('/api/getInfo', (req, res) => {
   }
 })
 
-app.post('/api/getFriendInfo', (req, res) => {
+app.post('/api/getFriendProfile', (req, res) => {
   const user = users.find(u => u.username === req.body.username)
   if (user) {
     const friend = {
@@ -390,27 +449,21 @@ app.post('/api/delFriend', (req, res) => {
   }
 })
 
-app.post('/api/getConvList', (req, res) => {
+app.post('/api/getNotif', (req, res) => {
   const username = req.body.username
-  const convList = []
   const convs = conversations.filter(c => (c.from === username || c.to === username))
-
+  // console.log(convs)
+  let notif = 0
   if (convs) {
     for (const conv of convs) {
-      const friendname = conv.from === username ? conv.to : conv.from
-      let notif = false
-      if (conv.from === username) {
-        notif = !conv.from_seen
-      } else if (conv.to === username) {
-        notif = !conv.to_seen
+      if ((conv.from === username && !conv.from_seen) || (conv.to === username && !conv.to_seen)) {
+        notif++
       }
-      const item = { name: friendname, notif: notif }
-      convList.push(item)
     }
+    res.json({
+      notif: notif
+    })
   }
-  res.json({
-    convList: convList
-  })
 })
 
 app.post('/api/changeAvatar', (req, res) => {

@@ -60,7 +60,7 @@
           <v-divider></v-divider>
           <p class="text-right mt-2 mb-0 subtitle-2 font-italic font-weight-light">
             Created by
-            <v-tooltip bottom>
+            <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/Aetaugan">Camille REGIS</a>
               </template>
@@ -68,16 +68,19 @@
               <span>Visit github</span>
             </v-tooltip>
             and
-            <v-tooltip bottom>
+            <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/VectoorSK">Victor BELIN</a>
               </template>
               <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
               <span>Visit github</span>
             </v-tooltip>
+            <v-spacer></v-spacer>
+            <span class="text-right">
+              <v-icon small class="" :color="color">mdi-copyright</v-icon><span class="subtitle font-weight-regular" :style="'color:' + color">2019</span>
+            </span>
           </p>
           <p class="text-right subtitle">
-            <v-icon small :color="color">mdi-copyright</v-icon><span :style="'color:' + color">2019</span>
           </p>
         </v-card>
       </v-col>

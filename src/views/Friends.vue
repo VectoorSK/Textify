@@ -34,22 +34,20 @@
         </v-row>
       </v-card>
     </v-card>
-    <!--
-    <v-card
-      flat
-      class="mx-auto my-2 pa-2"
-      max-width="55vw"
-      min-width="550"
-      color="blue-grey lighten-4"
+    <v-snackbar
+      v-model="snackbar"
+      :color="color"
+      class="white--text"
     >
-      <v-text-field
-        class="mx-5"
-        v-model="user"
-        label="Pseudo"
-      ></v-text-field>
-      <v-btn @click="load(user)" class="mx-5">load user</v-btn>
-      {{ userload }}
-    </v-card> -->
+      {{ snackbarText }}
+      <v-btn
+        color="white"
+        text
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -65,6 +63,7 @@ export default {
     if (!this.$session.exists()) {
       this.$router.push('/')
     }
+    this.userload = this.$session.get('username')
     this.load(this.userload)
     this.color = this.$session.get('colorApp')
   },
@@ -74,12 +73,15 @@ export default {
     }
   },
   data: () => ({
+    userload: '',
     userList: [],
     color: 'primary',
     friendList: [],
     err: '',
     open: false,
-    url: 'http://localhost:4000' // ''
+    url: 'http://localhost:4000', // '',
+    snackbar: false,
+    snackbarText: ''
   }),
   methods: {
     // Affiche les amis de l'user correspondant
@@ -93,51 +95,32 @@ export default {
         this.userload = user
         this.friendList = []
         response.data.friends.forEach(async username => {
-          let { avatar, name, surname } = await this.getFriendInfo(username)
+          let data = await this.getInfo(username)
+          // let { avatar, name, surname } = await this.getInfo(username).friend
           this.friendList.push({
-            avatar: avatar,
-            name: name,
-            surname: surname,
+            avatar: data.friend.avatar,
+            name: data.friend.name,
+            surname: data.friend.surname,
             username: username,
-            isConv: false,
-            notif: false
+            isConv: data.isConv,
+            notif: data.notif
           })
           this.friendList.sort(this.byPseudo)
         })
-        this.getConvList(this.userload)
       }
     },
     // Recupere les infos d'un user à partir de son username
-    async getFriendInfo (username) {
+    async getInfo (friend) {
       const response = await this.axios.post(this.url + '/api/getInfo',
         {
-          username: username
+          username: this.userload,
+          friendname: friend
         }
       )
       if (response.data.message === 'found') {
         return response.data
       } else {
         return -1
-      }
-    },
-    // Recupere la liste des amis avec une conversation existante et update 'isConv dans friendList[]
-    async getConvList (username) {
-      const response = await this.axios.post(this.url + '/api/getConvList',
-        {
-          username: username
-        }
-      )
-      if (response) {
-        for (const friend of this.friendList) {
-          // const isConv = response.data.convList.find(u => u.name === friend.username)
-          // friend.isConv = !!isConv
-          for (const item of response.data.convList) {
-            if (friend.username === item.name) {
-              friend.isConv = true
-              friend.notif = item.notif
-            }
-          }
-        }
       }
     },
     // sort by pseudo
@@ -159,7 +142,7 @@ export default {
     },
     // ajoute "friend" à la liste d'ami de "user" et vice versa
     async addFriend (user, friend) {
-      const fData = await this.getFriendInfo(friend)
+      const fData = await this.getInfo(friend)
       // Si "friend" existe
       if (fData !== -1) {
         const res = await this.axios.post(this.url + '/api/addFriend',
@@ -177,6 +160,8 @@ export default {
             let list = res.data.list.sort()
             this.$session.set('friends', list)
             this.err = ''
+            this.snackbarText = friend + ' has been added to your friend list.'
+            this.snackbar = true
           }
         }
       } else { // Sinon
@@ -192,12 +177,14 @@ export default {
       )
       if (rep) {
         this.load(this.userload)
+        this.snackbarText = friend + ' has been removed from your friend list.'
+        this.snackbar = true
       }
       // this.friendList.splice(id, 1)
     }
   },
   computed: {
-    userload: {
+    userloadS: {
       get: function () {
         return this.$session.get('username')
       },

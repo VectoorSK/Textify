@@ -19,7 +19,7 @@
             <Conversation :conversation="conversation" :to_seen="to_seen" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
-        <v-row v-if="friendLoad !== null" align="center" class="my-0 mx-2 pa-0">
+        <v-row v-if="friendLoad !== null" align="center" justify="center">
           <v-col cols="2" class="ma-0 pa-0">
             <!-- select smiley button -->
             <v-menu top offset-y height="240" max-width="28vw" min-width="300" :close-on-content-click="false" v-model="emojiTabOpen">
@@ -27,8 +27,8 @@
                 <v-btn icon
                   v-on="on"
                   :color="emojiTabOpen || colorTab ? color : ''"
-                  @mouseover="colorTab = color"
-                  @mouseout="colorTab = ''"
+                  @mouseover="colorTab = true"
+                  @mouseout="colorTab = false"
                 >
                   <v-icon>mdi-emoticon</v-icon>
                 </v-btn>
@@ -39,25 +39,25 @@
             <!-- send position button -->
             <v-btn icon
               @click="sendPos"
-              :color="colorLocation"
-              @mouseover="colorLocation = color"
-              @mouseout="colorLocation = ''"
+              :color="colorLocation ? color : ''"
+              @mouseover="colorLocation = true"
+              @mouseout="colorLocation = false"
             >
               <v-icon>my_location</v-icon>
             </v-btn>
             <!-- send picture button -->
             <v-btn icon
               @click="inputType === 'text' ? inputType = 'file' : inputType = 'text'"
-              :color="colorPic"
-              @mouseover="colorPic = color"
-              @mouseout="colorPic = ''"
+              :color="colorPic ? color : ''"
+              @mouseover="colorPic = true"
+              @mouseout="colorPic = false"
             >
               <v-icon>{{ inputType === 'text' ? 'add_photo_alternate' : 'subject' }}</v-icon>
             </v-btn>
           </v-col>
-          <v-col cols="9" class="ma-0 pa-1">
+          <v-col cols="8" class="ma-0 pa-0" align="center">
             <!-- input text (change with <v-textarea>) -->
-            <v-text-field
+            <v-textarea
               v-if="inputType === 'text'"
               v-model="message"
               :append-icon="marker ? 'mdi-map-marker' : 'mdi-map-marker-off'"
@@ -66,10 +66,13 @@
               label="Message"
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
-              @keyup.enter="sendMessage"
+              @keyup.shift.enter="sendMessage"
               @click:clear="clearMessage"
               :color="color"
-            ></v-text-field>
+              rows="1"
+              auto-grow
+              ref="textarea"
+            ></v-textarea>
             <!-- input file -->
             <!-- <v-file-input
               v-else
@@ -118,6 +121,7 @@
       <v-btn @click="loadConv" class="mx-5">load conversation</v-btn>
       {{ 'To: ' + to + ' / user: ' + user }}
     </v-card> -->
+    <v-btn @click="log">log</v-btn>
   </div>
 </template>
 
@@ -152,21 +156,24 @@ export default {
     message2: '',
     file: undefined,
     img: null,
-    colorPic: '',
+    colorPic: false,
     dialog: false,
     currentSmiley: '🙂',
     smiley: '',
     emojiTabOpen: false,
-    colorTab: '',
+    colorTab: false,
     marker: false,
     latitude: null,
     longitude: null,
     town: '',
-    colorLocation: '',
+    colorLocation: false,
     color: '#512DA8',
     conversation: []
   }),
   methods: {
+    log () {
+      console.log(this.$refs.textarea.$options.propsData)
+    },
     async loadConv () {
       const res = await this.axios.post(this.url + '/api/getConv',
         {
@@ -176,7 +183,6 @@ export default {
       )
       if (res.data.status === 1) {
         console.log('FOUND')
-        console.log(res.data)
         this.conversation = res.data.content
         this.friendLoad = res.data.To
         this.from_seen = res.data.from_seen
