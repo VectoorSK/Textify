@@ -1,7 +1,6 @@
 <template>
   <div id="friends">
-    <!-- <h2 class="my-1 primary--text text-center">TEXTIFY</h2> -->
-    <!-- CONTAINER -->
+    <!-- CONTAINER (w/ border) -->
     <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
         flat
@@ -13,19 +12,16 @@
       >
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
-            <!-- FENETRE DE CONVERSATION -->
+            <!-- TOP BAR (friend info) -->
             <FriendBar
               v-model="err"
-              :open="open"
               :error="err"
-              :userlist="userList['users']"
               :user="userload"
               :color="color"
-              v-on:update-color="updateColor"
               v-on:add-friend="addFriend"
             ></FriendBar>
+            <!-- CONVERSATION WINDOW -->
             <FriendList
-              v-if="userList"
               :friendlist="friendList"
               :color="color"
               v-on:del-friend="delFriend"
@@ -34,6 +30,7 @@
         </v-row>
       </v-card>
     </v-card>
+    <!-- SNACKBAR (add/remove friend) -->
     <v-snackbar
       v-model="snackbar"
       :color="color"
@@ -59,33 +56,30 @@ export default {
   components: {
     FriendBar, FriendList
   },
+  data: () => ({
+    // user logged info
+    userload: '',
+    color: '',
+    friendList: [],
+    // add friend error
+    err: '',
+    // snackbar
+    snackbar: false,
+    snackbarText: '',
+    // prod
+    url: 'http://localhost:4000'
+  }),
   mounted: function () {
     if (!this.$session.exists()) {
       this.$router.push('/')
     }
     this.userload = this.$session.get('username')
-    this.load(this.userload)
+    this.loadFriends(this.userload)
     this.color = this.$session.get('colorApp')
   },
-  watch: {
-    '$route': function () {
-      this.color = this.$session.get('colorApp')
-    }
-  },
-  data: () => ({
-    userload: '',
-    userList: [],
-    color: 'primary',
-    friendList: [],
-    err: '',
-    open: false,
-    url: 'http://localhost:4000', // '',
-    snackbar: false,
-    snackbarText: ''
-  }),
   methods: {
-    // Affiche les amis de l'user correspondant
-    async load (user) {
+    // load friendlist (with all infos)
+    async loadFriends (user) {
       const response = await this.axios.post(this.url + '/api/loadUser',
         {
           username: user
@@ -94,9 +88,10 @@ export default {
       if (response.data.friends) {
         this.userload = user
         this.friendList = []
+        // for each friend in user.friends
         response.data.friends.forEach(async username => {
+          // load friend info and put it in friendList
           let data = await this.getInfo(username)
-          // let { avatar, name, surname } = await this.getInfo(username).friend
           this.friendList.push({
             avatar: data.friend.avatar,
             name: data.friend.name,
@@ -109,7 +104,7 @@ export default {
         })
       }
     },
-    // Recupere les infos d'un user à partir de son username
+    // get friend info (avatar, name, surname, username, isConv, notif)
     async getInfo (friend) {
       const response = await this.axios.post(this.url + '/api/getInfo',
         {
@@ -123,7 +118,7 @@ export default {
         return -1
       }
     },
-    // sort by pseudo
+    // sort by pseudo function
     byPseudo (a, b) {
       const userA = a.username.toUpperCase()
       const userB = b.username.toUpperCase()
@@ -136,14 +131,9 @@ export default {
       }
       return comparison
     },
-    // change color
-    updateColor (c) {
-      this.color = c
-    },
-    // ajoute "friend" à la liste d'ami de "user" et vice versa
+    // add 'friend' to user.friends and 'user' to friend.friends (Server side)
     async addFriend (user, friend) {
       const fData = await this.getInfo(friend)
-      // Si "friend" existe
       if (fData !== -1) {
         const res = await this.axios.post(this.url + '/api/addFriend',
           {
@@ -152,11 +142,11 @@ export default {
           }
         )
         if (res) {
-          this.load(this.userload)
-          this.open = !this.open
           if (res.data.error) {
             this.err = res.data.message
           } else {
+            // reload friendList
+            this.loadFriends(this.userload)
             let list = res.data.list.sort()
             this.$session.set('friends', list)
             this.err = ''
@@ -164,10 +154,11 @@ export default {
             this.snackbar = true
           }
         }
-      } else { // Sinon
+      } else {
         this.err = 'Invalid username'
       }
     },
+    // delete 'friend' from user.friends and 'user' from friend.friends (Server side)
     async delFriend (friend) {
       const rep = await this.axios.post(this.url + '/api/delFriend',
         {
@@ -176,26 +167,17 @@ export default {
         }
       )
       if (rep) {
-        this.load(this.userload)
+        // reload friendList
+        this.loadFriends(this.userload)
         this.snackbarText = friend + ' has been removed from your friend list.'
         this.snackbar = true
       }
-      // this.friendList.splice(id, 1)
     }
   },
-  computed: {
-    userloadS: {
-      get: function () {
-        return this.$session.get('username')
-      },
-      set: function () {
-        //
-      }
+  watch: {
+    '$route': function () {
+      this.color = this.$session.get('colorApp')
     }
   }
 }
-
 </script>
-
-<style scoped>
-</style>

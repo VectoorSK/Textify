@@ -12,9 +12,7 @@
           class="fill-height mx-2 mt-2"
         >
           <!-- Profile picture -->
-          <v-avatar
-            size="80"
-          >
+          <v-avatar size="80">
             <img
               :src="require('../../public/avatars/' + this.avatar + '.png')"
               alt="avatar"
@@ -103,10 +101,6 @@ export default {
     // split desc in lines
     descMultLine: function () {
       return this.description.split('\n')
-    },
-    // return number of lines in desc
-    nbLines: function () {
-      return this.descMultLine.length
     }
   },
   watch: {
