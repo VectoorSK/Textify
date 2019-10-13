@@ -1,7 +1,10 @@
 <template>
   <nav>
+    <!-- TOP BAR -->
     <v-app-bar app elevate-on-scroll class="grey lighten-4">
+      <!-- open/close nav bar -->
       <v-app-bar-nav-icon class="black--text" v-if="logged" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
+      <!-- name & surname -->
       <v-expand-x-transition>
         <v-toolbar-title class="headline text-uppercase font-weight-bold" v-if="!navDrawer">
           <span>{{ usrLogged.surname }}</span>
@@ -9,15 +12,74 @@
         </v-toolbar-title>
       </v-expand-x-transition>
       <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-btn v-if="logged" text @click="log" router to="/login">
+      <!-- logout button -->
+      <v-btn v-if="logged" text @click="logout" router to="/login">
         <span>Log Out</span>
         <v-icon small class="ml-1">fa-sign-out-alt</v-icon> <!-- exit_to_app -->
       </v-btn>
     </v-app-bar>
 
+    <!-- NAVIGATION BAR (left) -->
+    <v-navigation-drawer app disable-resize-watcher :temporary="false" v-model="navDrawer" v-if="logged" :color="color">
+      <v-col align="center">
+        <!-- profile picture -->
+        <v-avatar color="blue-grey lighten-4" class="mt-5" size="130">
+          <v-img :src="require('../../public/avatars/' + this.usrLogged.avatar + '.png')"></v-img>
+        </v-avatar>
+        <!-- name & surname -->
+        <v-toolbar-title class="headline text-uppercase font-weight-bold white--text mt-2">
+          <span class="font-weight-light">{{ usrLogged.name }}</span>
+          <span>{{ ' ' + usrLogged.surname }}</span>
+        </v-toolbar-title>
+      </v-col>
+      <v-list dark>
+        <v-list-item-group>
+          <!-- navigation links -->
+          <v-list-item v-for="(link, id) in links" :key="id" router :to="link.route">
+            <v-list-item-action>
+              <!-- link icon or image -->
+              <v-icon v-if="link.icon">{{ link.icon }}</v-icon>
+              <v-img v-else max-width="22" :src="link.img"></v-img>
+            </v-list-item-action>
+            <v-list-item-content>
+              <!-- link title -->
+              <v-list-item-title>
+                <v-row class="mx-0" align="center">
+                <span>{{ link.text }}</span>
+                <v-spacer></v-spacer>
+                <!-- notification bubble (friendlist link only) -->
+                <v-btn v-if="link.text === 'Friends' && notif > 0" icon x-small class="white ma-0 pa-0" :color="color">{{ notif }}</v-btn>
+                </v-row>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+      <!-- navigation footer -->
+      <template v-slot:append>
+        <div>
+          <!-- change color menu w/ tooltip -->
+          <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenu">
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip right>
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn icon outlined dark v-on="{ ...menu, ...tooltip }" class="ma-2">
+                    <v-icon>mdi-palette</v-icon>
+                  </v-btn>
+                </template>
+                <span>Change color app</span>
+              </v-tooltip>
+            </template>
+            <!-- ColorPicker pop up -->
+            <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
+          </v-menu>
+        </div>
+      </template>
+    </v-navigation-drawer>
+
+    <!-- FOOTER BAR -->
     <v-footer app fixed inset class="grey lighten-4">
-      <!-- CHANGE COLOR MENU -->
+      <!-- change color menu w/ tooltip -->
       <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenuFooter">
         <template v-slot:activator="{ on: menu }">
           <v-tooltip right>
@@ -40,82 +102,19 @@
         <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
       </v-menu>
       <v-spacer></v-spacer>
+      <!-- Textify logo (home button) -->
       <v-btn fab depressed color="grey lighten-4" class="pt-2" router to="/">
         <v-img :src="require('../../public/logos/textify-logo-' + this.color.slice(-6) + '.png')" max-width="35" class="ma-1 pa-0"></v-img>
       </v-btn>
       <v-spacer></v-spacer>
     </v-footer>
 
-    <v-navigation-drawer app disable-resize-watcher :temporary="false" v-model="navDrawer" v-if="logged" :color="color">
-      <v-col align="center">
-        <v-dialog width="60vw" v-model="dialog">
-          <template v-slot:activator="{ on }">
-            <v-avatar v-on="on" color="blue-grey lighten-3" class="mt-5" size="130">
-              <v-img v-bind:src="path"></v-img>
-            </v-avatar>
-          </template>
-          <!-- Change Avatar Pop Up -->
-          <v-card class="pr-3">
-            <v-row class="mx-0">
-              <v-col cols="1" v-for="i in 50" :key="i" class="mx-0">
-                <v-btn depressed fab @click="changeAvatar(i)" min-width="55" min-height="52" color="blue-grey lighten-3">
-                  <v-avatar color="white">
-                    <v-img :src="require('../../public/avatars/' + i + '.png')"></v-img>
-                  </v-avatar>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-dialog>
-        <v-toolbar-title class="headline text-uppercase font-weight-bold white--text mt-2">
-          <span class="font-weight-light">{{ usrLogged.name }}</span>
-          <span>{{ ' ' + usrLogged.surname }}</span>
-        </v-toolbar-title>
-      </v-col>
-      <v-list dark>
-        <v-list-item-group>
-          <v-list-item v-for="(link, id) in links" :key="id" router :to="link.route">
-            <v-list-item-action>
-              <v-icon v-if="link.icon">{{ link.icon }}</v-icon>
-              <v-img v-else max-width="22" :src="link.img"></v-img>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>
-                <v-row class="mx-0" align="center">
-                <span>{{ link.text }}</span>
-                <v-spacer></v-spacer>
-                <v-btn v-if="link.text === 'Friends' && notif > 0" icon x-small class="white ma-0 pa-0" :color="color">{{ notif }}</v-btn>
-                </v-row>
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      <template v-slot:append>
-        <div>
-          <!-- CHANGE COLOR MENU -->
-          <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenu">
-            <template v-slot:activator="{ on: menu }">
-              <v-tooltip right>
-                <template v-slot:activator="{ on: tooltip }">
-                  <v-btn icon outlined dark v-on="{ ...menu, ...tooltip }" class="ma-2">
-                    <v-icon>mdi-palette</v-icon>
-                  </v-btn>
-                </template>
-                <span>Change color app</span>
-              </v-tooltip>
-            </template>
-            <!-- ColorPicker pop up -->
-            <ColorPicker v-model="color" v-on:update-color="changeColor"></ColorPicker>
-          </v-menu>
-        </div>
-      </template>
-    </v-navigation-drawer>
-
+    <!-- SNACKBAR (bottom) -->
     <v-snackbar
       v-model="snackbar"
       :color="color"
       class="white--text"
+      :timeout="3000"
     >
       {{ snackbarText }}
       <v-btn
@@ -137,9 +136,8 @@ export default {
     ColorPicker
   },
   data: () => ({
+    // user logged infos
     logged: false,
-    snackbar: false,
-    snackbarText: '',
     usrLogged: {
       avatar: 0,
       username: '',
@@ -147,7 +145,8 @@ export default {
       surname: ''
     },
     notif: 0,
-    url: 'http://localhost:4000',
+    color: '#512DA8',
+    // nav bar
     navDrawer: true,
     links: [
       { img: require('../../public/logos/textify-logo-white.png'), text: 'Home', route: '/' },
@@ -155,28 +154,39 @@ export default {
       { icon: 'mdi-account-multiple', text: 'Friends', route: '/friends' },
       { icon: 'mdi-message-processing-outline', text: 'Messages', route: '/textify/null' }
     ],
-    dialog: false,
+    // color menus
     colorMenu: false,
     colorMenuFooter: false,
-    color: '#512DA8'
+    // snackbar
+    snackbar: false,
+    snackbarText: '',
+    // prod
+    url: 'http://localhost:4000'
   }),
+  mounted () {
+    this.load('mount')
+  },
   methods: {
-    async changeAvatar (i) {
-      const res = await this.axios.post(this.url + '/api/changeAvatar', {
-        username: this.$session.get('username'),
-        avatar: i
-      })
-      if (res.data.status === 1) {
-        this.$session.set('avatar', i)
+    // load user logged infos
+    load (src) {
+      if (this.$session.exists()) {
         this.usrLogged.avatar = this.$session.get('avatar')
-        const current = this.$router.currentRoute.path
-        if (current.includes('profile')) {
-          this.$router.push('home')
-          this.$router.push(current)
+        this.usrLogged.username = this.$session.get('username')
+        this.usrLogged.name = this.$session.get('name')
+        this.usrLogged.surname = this.$session.get('surname')
+        this.color = this.$session.get('colorApp')
+        if (this.logged === false && src === 'route') {
+          this.snackbarText = 'Hello ' + this.usrLogged.username + '. Welcome back!'
+          this.snackbar = true
         }
+        this.logged = true
+        setTimeout(() => { this.getNotif(this.usrLogged.username) }, 100)
+      } else {
+        this.logged = false
+        this.color = '#512DA8'
       }
-      this.dialog = false
     },
+    // change colorApp of user logged
     async changeColor () {
       const res = await this.axios.post(this.url + '/api/changeColor', {
         username: this.$session.get('username'),
@@ -186,6 +196,7 @@ export default {
         this.$session.set('colorApp', this.color)
         this.colorMenu = false
         this.colorMenuFooter = false
+        // reload router-view to update components color
         const current = this.$router.currentRoute.path
         if (!current.includes('profile')) {
           this.$router.push('profile')
@@ -196,16 +207,15 @@ export default {
       }
     },
     async getNotif (username) {
-      const res = await this.axios.post(this.url + '/api/getNotif',
-        {
-          username: username
-        }
-      )
+      const res = await this.axios.post(this.url + '/api/getNotif', {
+        username: username
+      })
       if (res) {
         this.notif = res.data.notif
       }
     },
-    log () {
+    // clear session and go to homepage
+    logout () {
       if (this.logged) {
         this.$session.clear()
         this.$session.destroy()
@@ -217,42 +227,9 @@ export default {
       this.$router.push('/')
     }
   },
-  computed: {
-    path: function () {
-      return require('../../public/avatars/' + this.usrLogged.avatar + '.png')
-    }
-  },
-  mounted () {
-    if (this.$session.exists()) {
-      this.usrLogged.avatar = this.$session.get('avatar')
-      this.usrLogged.username = this.$session.get('username')
-      this.usrLogged.name = this.$session.get('name')
-      this.usrLogged.surname = this.$session.get('surname')
-      this.color = this.$session.get('colorApp')
-      this.logged = true
-      this.getNotif(this.usrLogged.username)
-    } else {
-      this.logged = false
-    }
-  },
   watch: {
     '$route': function (to, from) {
-      if (this.$session.exists()) {
-        this.usrLogged.avatar = this.$session.get('avatar')
-        this.usrLogged.username = this.$session.get('username')
-        this.usrLogged.name = this.$session.get('name')
-        this.usrLogged.surname = this.$session.get('surname')
-        this.color = this.$session.get('colorApp')
-        if (this.logged === false) {
-          this.snackbarText = 'Hello ' + this.usrLogged.username + '. Welcome back!'
-          this.snackbar = true
-        }
-        this.logged = true
-        this.getNotif(this.usrLogged.username)
-      } else {
-        this.logged = false
-        this.color = '#512DA8'
-      }
+      this.load('route')
     }
   }
 }
