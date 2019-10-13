@@ -1,7 +1,6 @@
 <template>
   <div id="textify">
-    <!-- <h2 class="my-1 text-center" :style="'color: ' + color">TEXTIFY</h2> -->
-    <!-- CONTAINER -->
+    <!-- CONTAINER (w/ border) -->
     <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
         flat
@@ -11,15 +10,16 @@
         min-width="550"
         color="blue-grey lighten-4"
       >
-        <!-- {{ 'from_seen = ' + from_seen + ' | to_seen = ' + to_seen }} -->
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
-            <!-- FENETRE DE CONVERSATION -->
+            <!-- TOP BAR (friend info) -->
             <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" :color="color"></SettingBar>
+            <!-- CONVERSATION WINDOW -->
             <Conversation :conversation="conversation" :to_seen="to_seen" :user="user" :color="color"></Conversation>
           </v-col>
         </v-row>
         <v-row v-if="friendLoad !== null" align="center" justify="center">
+          <!-- INPUT BAR (bottom) -->
           <v-col cols="2" class="ma-0 pa-0">
             <!-- select smiley button -->
             <v-menu top offset-y height="240" max-width="28vw" min-width="300" :close-on-content-click="false" v-model="emojiTabOpen">
@@ -56,7 +56,7 @@
             </v-btn>
           </v-col>
           <v-col cols="8" class="ma-0 pa-0" align="center">
-            <!-- input text (change with <v-textarea>) -->
+            <!-- input textarea -->
             <v-textarea
               v-if="inputType === 'text'"
               v-model="message"
@@ -67,7 +67,7 @@
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
               @keyup.shift.enter="sendMessage"
-              @click:clear="clearMessage"
+              @click:clear="this.message = ''"
               :color="color"
               rows="1"
               auto-grow
@@ -97,31 +97,7 @@
         </v-row>
       </v-card>
     </v-card>
-    <!-- TEST FILE -->
-    <!--  <v-card>
-      {{ file }}
-    </v-card> -->
-    <!-- <v-card
-      flat
-      class="mx-auto my-2 pa-2"
-      max-width="55vw"
-      min-width="550"
-      color="blue-grey lighten-4"
-    >
-      <v-text-field
-        class="mx-5"
-        v-model="from"
-        label="User"
-      ></v-text-field>
-      <v-text-field
-        class="mx-5"
-        v-model="to"
-        label="Friend"
-      ></v-text-field>
-      <v-btn @click="loadConv" class="mx-5">load conversation</v-btn>
-      {{ 'To: ' + to + ' / user: ' + user }}
-    </v-card> -->
-    <v-btn @click="log">log</v-btn>
+    <!-- <v-btn @click="log">log</v-btn> -->
   </div>
 </template>
 
@@ -132,6 +108,39 @@ import SettingBar from '../components/SettingBar'
 
 export default {
   components: { EmojiTab, Conversation, SettingBar },
+  data: () => ({
+    // user logged infos:
+    user: '',
+    userFriends: [],
+    color: '',
+    // friend infos:
+    to: '',
+    friendLoad: null,
+    // conversation infos:
+    conversation: [],
+    from_seen: null,
+    to_seen: null,
+    // smiley select button
+    emojiTabOpen: false,
+    colorTab: false,
+    smiley: '',
+    // gps location:
+    colorLocation: false,
+    latitude: null,
+    longitude: null,
+    town: '',
+    // message/file input:
+    message: '',
+    marker: false,
+    inputType: 'text',
+    colorPic: false,
+    file: undefined,
+    img: null,
+    // big smiley button:
+    currentSmiley: '🙂',
+    // prod:
+    url: 'http://localhost:4000'
+  }),
   mounted: function () {
     if (this.$session.exists()) {
       this.color = this.$session.get('colorApp')
@@ -143,37 +152,11 @@ export default {
       this.$router.push('/')
     }
   },
-  data: () => ({
-    user: '',
-    to: '',
-    from_seen: null,
-    to_seen: null,
-    userFriends: [],
-    friendLoad: null,
-    url: 'http://localhost:4000', // ''
-    inputType: 'text',
-    message: '',
-    message2: '',
-    file: undefined,
-    img: null,
-    colorPic: false,
-    dialog: false,
-    currentSmiley: '🙂',
-    smiley: '',
-    emojiTabOpen: false,
-    colorTab: false,
-    marker: false,
-    latitude: null,
-    longitude: null,
-    town: '',
-    colorLocation: false,
-    color: '#512DA8',
-    conversation: []
-  }),
   methods: {
-    log () {
+    /* log () {
       console.log(this.$refs.textarea.$options.propsData)
-    },
+    }, */
+    // load conversation infos between 'from' and 'to'
     async loadConv () {
       const res = await this.axios.post(this.url + '/api/getConv',
         {
@@ -182,24 +165,19 @@ export default {
         }
       )
       if (res.data.status === 1) {
-        console.log('FOUND')
         this.conversation = res.data.content
         this.friendLoad = res.data.To
         this.from_seen = res.data.from_seen
         this.to_seen = res.data.to_seen
       } else if (res.data.status === 0) {
-        console.log('NOT FOUND')
         this.conversation = []
         this.friendLoad = res.data.To
       } else {
-        console.log('NO SUCH USER')
         this.conversation = []
         this.friendLoad = null
       }
     },
-    updateColor (c) {
-      this.color = c
-    },
+    // send message to the conv (Server side)
     async send (message) {
       const res = await this.axios.post(this.url + '/api/sendMess',
         {
@@ -209,11 +187,11 @@ export default {
         }
       )
       if (res) {
-        console.log(res.data.message)
         this.from_seen = true
         this.to_seen = false
       }
     },
+    // send text message
     sendMessage () {
       let from = this.marker ? this.town : ''
       if (this.message !== '') {
@@ -225,30 +203,12 @@ export default {
           date: new Date()
         }
         this.conversation.push(message)
+        this.message = ''
+        // send on server
         this.send(message)
-        this.clearMessage()
       }
     },
-    sendMessage2 () {
-      if (this.message2 !== '') {
-        let message = {
-          type: 'text',
-          content: this.message2,
-          sender: this.to,
-          from: 'Varazdin - Hrvatska',
-          date: new Date()
-        }
-        this.conversation.push(message)
-        this.send(message)
-        this.clearMessage2()
-      }
-    },
-    clearMessage () {
-      this.message = ''
-    },
-    clearMessage2 () {
-      this.message2 = ''
-    },
+    // send IMG message (test)
     submitFile () {
       let formData = new FormData()
       formData.append('file', this.file, 'file')
@@ -273,10 +233,8 @@ export default {
       this.file = this.$refs.file.files[0]
       console.log(this.file)
     },
+    // send IMG message (current)
     sendIMG () {
-      // const client = require('filestack-js').init('AIC8o333S52FzCIfpPKB4z')
-      // client.picker().open()
-
       let image = {
         type: 'img',
         content: this.img,
@@ -287,6 +245,7 @@ export default {
       this.conversation.push(image)
       this.send(image)
     },
+    // send big smiley message
     sendSmiley () {
       let smiley = {
         type: 'smiley',
@@ -298,6 +257,7 @@ export default {
       this.conversation.push(smiley)
       this.send(smiley)
     },
+    // send location message
     sendPos () {
       var options = {
         enableHighAccuracy: true,
@@ -367,20 +327,7 @@ export default {
         return id
       }
     },
-    getJSON (url, callback) {
-      let xhr = new XMLHttpRequest()
-      xhr.open('GET', url, true)
-      xhr.responseType = 'json'
-      xhr.onload = function () {
-        let status = xhr.status
-        if (status === 200) {
-          callback(null, xhr.response)
-        } else {
-          callback(status, xhr.response)
-        }
-      }
-      xhr.send()
-    },
+    // enable/disable marker position
     chgMarker () {
       if (!this.marker) {
         this.findCity()
@@ -391,6 +338,7 @@ export default {
         this.marker = false
       }
     },
+    // get city from gps coords (read JSON from openstreetmap API)
     findCity () {
       var options = {
         enableHighAccuracy: true,
@@ -425,17 +373,31 @@ export default {
         self.marker = false
         console.warn(`ERREUR in findCity() (${err.code}): ${err.message}`)
       }
+    },
+    // get JSON from url function
+    getJSON (url, callback) {
+      let xhr = new XMLHttpRequest()
+      xhr.open('GET', url, true)
+      xhr.responseType = 'json'
+      xhr.onload = function () {
+        let status = xhr.status
+        if (status === 200) {
+          callback(null, xhr.response)
+        } else {
+          callback(status, xhr.response)
+        }
+      }
+      xhr.send()
     }
   },
   computed: {
+    // google maps link to actual coords
     posLink: function () {
       return 'https://maps.google.com/?q=' + this.latitude + ',' + this.longitude
     },
+    // openstreet map link for reverse geocoding
     jsonLink: function () {
       return 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + this.latitude + '&lon=' + this.longitude + '&zoom=18&addressdetails=1'
-    },
-    friendPic: function () {
-      return 10
     }
   },
   watch: {

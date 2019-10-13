@@ -1,6 +1,7 @@
 <template>
   <v-card class="overflow-hidden">
     <v-row class="mx-1" justify="space-between">
+      <!-- BIG SMILEY GRID -->
       <v-col
         v-for="(row, id) in smileys"
         :key="id"

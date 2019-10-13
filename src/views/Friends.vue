@@ -12,7 +12,7 @@
       >
         <v-row justify="center">
           <v-col cols="11" class="pa-0 pt-3">
-            <!-- TOP BAR (friend info) -->
+            <!-- TOP BAR (add friend button) -->
             <FriendBar
               v-model="err"
               :error="err"
@@ -20,7 +20,7 @@
               :color="color"
               v-on:add-friend="addFriend"
             ></FriendBar>
-            <!-- CONVERSATION WINDOW -->
+            <!-- FRIENDLIST WINDOW -->
             <FriendList
               :friendlist="friendList"
               :color="color"

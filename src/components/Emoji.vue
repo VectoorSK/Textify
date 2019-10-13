@@ -10,6 +10,7 @@
       :slider-color="color"
       slider-size="4"
     >
+      <!-- SMILEY CATEGORY TABS -->
       <v-tab
         v-for="(cat, id) in catSmileys"
         :key="id"
@@ -17,6 +18,7 @@
       >
         <v-icon :color="parseInt(activeTab.slice(-1)) === id ? color : 'grey lighten-1'">{{ cat.icon }}</v-icon>
       </v-tab>
+      <!-- SMILEY GRIDS -->
       <v-tab-item
         v-for="(cat, id) in catSmileys"
         :key="id"
@@ -61,6 +63,7 @@ export default {
   },
   data: () => ({
     activeTab: 'tab-0',
+    // smiley categories list:
     catSmileys: [
       { name: 'people', img: '🙂', icon: 'mdi-emoticon' },
       { name: 'animals', img: '🐵', icon: 'mdi-cat' },
@@ -72,6 +75,7 @@ export default {
       { name: 'symbols', img: '️❤️', icon: 'mdi-heart' },
       { name: 'symbols2', img: '️🆒', icon: 'mdi-new-box' }
     ],
+    // smiley categories:
     people: [
       '🙂', '🙃', '😃', '😀', '😄', '😁', '😊', '😇', '😅', '😂', '😆', '🤣',
       '😬', '😌', '🤤', '😉', '😋', '😛', '😜', '😝', '😎', '🤫', '🤐', '🤡',
@@ -147,6 +151,7 @@ export default {
     ]
   }),
   methods: {
+    // send smiley value to parent components
     addSmiley (catName, i) {
       if (catName === 'people') {
         this.$emit('input', this.people[i - 1])

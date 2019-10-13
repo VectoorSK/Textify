@@ -2,7 +2,7 @@
   <v-card>
     <v-list class="py-0">
       <v-list-item-group>
-        <!-- CHANGE EMOJI DIALOG -->
+        <!-- CHANGE BIG EMOJI DIALOG -->
         <v-list-item>
           <v-dialog max-height="300" max-width="300" v-model="dialog">
             <template v-slot:activator="{ on }">
@@ -11,7 +11,7 @@
                 <span class="mx-4">Emoji</span>
               </div>
             </template>
-            <!-- Emoji pop up -->
+            <!-- Big Emoji pop up -->
             <EmojiSelect v-model="currentSmiley" v-on:close-dialog="closeDialog"></EmojiSelect>
           </v-dialog>
         </v-list-item>
@@ -40,6 +40,7 @@ export default {
     }
   },
   watch: {
+    // send new bigsmiley to parent component
     currentSmiley: function () {
       this.$emit('input', this.currentSmiley)
     }
