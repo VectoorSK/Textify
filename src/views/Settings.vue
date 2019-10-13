@@ -2,8 +2,10 @@
 <template>
   <v-container class="pa-0">
     <v-form>
+      <!-- change profile and background picture -->
       <v-row class="my-2" align="center">
         <v-spacer></v-spacer>
+        <!-- change profile picture w/ badge -->
         <v-badge overlap bottom :color="color">
           <v-avatar color="grey lighten-2">
             <v-img
@@ -33,6 +35,7 @@
           </template>
         </v-badge>
         <v-spacer></v-spacer>
+        <!-- change background picture w/ badge -->
         <v-badge overlap bottom :color="color" style="height: 100%">
           <v-avatar color="grey lighten-2" tile>
             <v-img
@@ -61,6 +64,7 @@
         </v-badge>
         <v-spacer></v-spacer>
       </v-row>
+      <!-- change Email field -->
       <v-text-field
         v-model="email"
         :color="color"
@@ -70,6 +74,7 @@
         label="E-mail"
         :rules="emailRules"
       ></v-text-field>
+      <!-- Description text area w/ badge (smileys) -->
       <v-badge overlap :color="color" style="min-width: 100%">
         <template v-slot:badge>
           <!-- select smiley button -->
@@ -94,6 +99,7 @@
           rows="3"
         ></v-textarea>
       </v-badge>
+      <!-- Submit button -->
       <v-row class="ma-0">
         <v-btn dark class="mx-auto" :color="color" @click="submit">submit</v-btn>
       </v-row>
@@ -111,6 +117,26 @@ export default {
   props: {
     desc: String
   },
+  data: () => ({
+    // user logged info
+    username: '',
+    avatar: 1,
+    background: 1,
+    email: '',
+    color: '',
+    description: '',
+    smiley: '',
+    // valid email regex
+    emailRules: [
+      // eslint-disable-next-line no-useless-escape
+      v => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid'
+    ],
+    // avatar & background dialogs
+    dialogAv: false,
+    dialogBg: false,
+    // prod
+    url: 'http://localhost:4000' // ''
+  }),
   mounted: function () {
     if (this.$session.exists()) {
       this.avatar = this.$session.get('avatar')
@@ -119,24 +145,8 @@ export default {
       this.color = this.$session.get('colorApp')
     }
   },
-  data: () => ({
-    valid: false,
-    username: '',
-    email: '',
-    description: '',
-    color: '',
-    emailRules: [
-      // eslint-disable-next-line no-useless-escape
-      v => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || 'E-mail must be valid'
-    ],
-    avatar: 1,
-    background: 1,
-    dialogAv: false,
-    dialogBg: false,
-    smiley: '',
-    url: 'http://localhost:4000' // ''
-  }),
   methods: {
+    // submit setting changes
     async submit () {
       if (this.email === '') {
         this.email = this.$session.get('email')
@@ -145,8 +155,7 @@ export default {
         this.description = this.$session.get('description')
       }
       try {
-        const res = await this.axios.post(
-          'http://localhost:4000/api/changeSettings',
+        const res = await this.axios.post(this.url + '/api/changeSettings',
           {
             email: this.email,
             description: this.description,
@@ -155,12 +164,14 @@ export default {
         )
         this.$session.set('email', res.data.email)
         this.$session.set('description', res.data.description)
+        // close Setting components and update in server
         this.$emit('input', false)
         this.$emit('update')
       } catch (error) {
         console.log('response', JSON.stringify(error.response))
       }
     },
+    // change profile picture in server
     async changeAvatar (i) {
       const res = await this.axios.post(this.url + '/api/changeAvatar', {
         username: this.$session.get('username'),
@@ -172,6 +183,7 @@ export default {
         this.dialogAv = false
       }
     },
+    // change background picture in server
     async changeBackground (i) {
       const res = await this.axios.post(this.url + '/api/changeBackground', {
         username: this.$session.get('username'),
@@ -185,7 +197,7 @@ export default {
     }
   },
   watch: {
-    '$route': function (to, from) {
+    '$route': function () {
       this.color = this.$session.get('colorApp')
     }
   }

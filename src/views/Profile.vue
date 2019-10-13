@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-card class="elevation-2 mx-auto" max-width="400">
+      <!-- Background picture -->
       <v-img
         class="white--text"
         height="200px"
@@ -10,15 +11,17 @@
           align="start"
           class="fill-height mx-2 mt-2"
         >
+          <!-- Profile picture -->
           <v-avatar
             size="80"
           >
             <img
-              :src="avatarPath"
+              :src="require('../../public/avatars/' + this.avatar + '.png')"
               alt="avatar"
             >
           </v-avatar>
           <v-spacer></v-spacer>
+          <!-- Show settings button -->
           <v-btn @click="settings" fab small outlined :color="background > 15 ? setting ? 'grey lighten-1' : 'grey darken-1' : setting ? 'grey lighten-2' : 'white'" dark>
             <v-icon>fa-cogs</v-icon>
           </v-btn>
@@ -28,25 +31,32 @@
             dark
           >
             <v-list-item-content>
+              <!-- Username -->
               <v-list-item-title class="title" :class="background > 15 ? 'black--text' : ''">
                 {{ this.$session.get('username') }}
               </v-list-item-title>
+              <!-- Email -->
               <v-list-item-subtitle :class="background > 15 ? 'black--text' : ''">
                 {{ this.$session.get('email') }}
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-list-item-action-text class="mb-3" :class="background > 15 ? 'black--text' : ''">{{ this.$session.get('birthday') }}</v-list-item-action-text>
+              <!-- Birthday -->
+              <v-list-item-action-text class="mb-3" :class="background > 15 ? 'black--text' : ''">
+                {{ this.$session.get('birthday') }}
+              </v-list-item-action-text>
             </v-list-item-action>
           </v-list-item>
         </v-row>
       </v-img>
       <v-card-text>
         <span class="text--primary">
+          <!-- Multilines description -->
           <div v-if="setting === false">
             <span v-for="(lines, id) in descMultLine" :key="id">{{ lines }}<br/></span>
           </div>
-          <Settings v-else v-model="setting" :desc="description" v-on:update="update"></Settings>
+          <!-- Settings -->
+          <Settings v-else v-model="setting" :desc="description" v-on:update="load"></Settings>
         </span>
       </v-card-text>
     </v-card>
@@ -60,48 +70,48 @@ export default {
   components: {
     Settings
   },
-  mounted: function () {
-    if (this.$session.exists()) {
-      this.avatar = this.$session.get('avatar')
-      this.background = this.$session.get('background')
-      this.description = this.$session.get('description')
-    } else {
-      this.$router.push('/')
-    }
-  },
   data () {
     return {
-      loading: false,
+      // user logged infos
       avatar: 1,
       background: 1,
       description: '',
+      // setting component boolean
       setting: false
     }
   },
+  mounted: function () {
+    this.load()
+  },
   methods: {
+    // load user logged info
+    load () {
+      if (this.$session.exists()) {
+        this.avatar = this.$session.get('avatar')
+        this.background = this.$session.get('background')
+        this.description = this.$session.get('description')
+      } else {
+        this.$router.push('/')
+      }
+    },
+    // open/close settings
     settings () {
       this.setting = !this.setting
-    },
-    update () {
-      this.avatar = this.$session.get('avatar')
-      this.background = this.$session.get('background')
-      this.description = this.$session.get('description')
     }
   },
   computed: {
-    avatarPath: function () {
-      return require('../../public/avatars/' + this.avatar + '.png')
-    },
+    // split desc in lines
     descMultLine: function () {
       return this.description.split('\n')
     },
+    // return number of lines in desc
     nbLines: function () {
       return this.descMultLine.length
     }
   },
   watch: {
     '$route': function (to, from) {
-      this.avatar = this.$session.get('avatar')
+      this.load()
     }
   }
 }

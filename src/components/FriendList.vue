@@ -11,7 +11,7 @@
       </v-dialog>
       <v-dialog v-model="dialogDel" max-width="400">
         <v-card class="pa-2">
-          <p class="title">Are you sure to remove {{ userDelConfirm }} from your friend list?</p>
+          <p class="subtitle-1 font-weight-bold">Are you sure to remove {{ userDelConfirm }} from your friends?</p>
           <v-card-actions>
             <div class="flex-grow-1"></div>
             <v-btn color="green darken-1" text @click="delFriend(userDelConfirm)">Agree</v-btn>
