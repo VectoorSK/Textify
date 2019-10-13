@@ -9,6 +9,16 @@
       <v-dialog v-model="dialogFriend" max-width="400" class="pa-0">
         <FriendProfile :friend="friend" class="pa-0"></FriendProfile>
       </v-dialog>
+      <v-dialog v-model="dialogDel" max-width="400">
+        <v-card class="pa-2">
+          <p class="title">Are you sure to remove {{ userDelConfirm }} from your friend list?</p>
+          <v-card-actions>
+            <div class="flex-grow-1"></div>
+            <v-btn color="green darken-1" text @click="delFriend(userDelConfirm)">Agree</v-btn>
+            <v-btn color="red darken-1" text @click="dialogDel = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-list-item-group>
         <v-list-item v-for="(frd, id) in friendlist" :key="id" @click="goToTextify(frd.username)" class="pa-0">
           <v-row align="center" class="ma-0">
@@ -32,12 +42,12 @@
               icon
               small
               class="mr-2"
-              @click.stop="delFriend(frd.username)"
               @mouseover="colorClear = id"
               @mouseout="colorClear = -1"
               color="red"
+              @click.stop="openDelConfirm(frd.username)"
             >
-              <v-icon :small="colorClear !== id" :color="colorClear === id ? 'red' : ''">clear</v-icon>
+              <v-icon :small="colorClear !== id" :color="colorClear === id ? 'red' : 'grey'">clear</v-icon>
             </v-btn>
           </v-row>
         </v-list-item>
@@ -61,20 +71,30 @@ export default {
     dialogFriend: false,
     friend: {},
     colorClear: -1,
+    userDelConfirm: '',
+    dialogDel: false,
     url: 'http://localhost:4000' // ''
   }),
   methods: {
+    test () {
+      console.log(this.$refs.de)
+    },
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight
     },
     goToTextify (username) {
       this.$router.push('/textify/' + username)
     },
+    openDelConfirm (username) {
+      this.userDelConfirm = username
+      this.dialogDel = true
+    },
     delFriend (username) {
       this.$emit('del-friend', username)
+      this.dialogDel = false
     },
     async openProfile (username) {
-      const res = await this.axios.post(this.url + '/api/getNotif', {
+      const res = await this.axios.post(this.url + '/api/getFriendProfile', {
         username: username
       })
       if (res) {
