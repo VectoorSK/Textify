@@ -74,19 +74,32 @@
               ref="textarea"
             ></v-textarea>
             <!-- input file -->
-            <!-- <v-file-input
+            <v-file-input
+              v-model="files"
               v-else
-              v-model="file"
+              id="file"
+              multiple
               accept="image/*"
-              label="Send picture"
+              label="Select picture"
+              prepend-icon="mdi-camera"
               append-outer-icon="send"
-              @click="handleFileUpload"
-              @click:append-outer="submitFile"
-            ></v-file-input> -->
-            <div v-else>
-              <input type="file" id="file" ref="file" v-on:change="handleFileUpload"/>
-              <v-btn v-on:click="sendIMG">Submit</v-btn>
-            </div>
+              v-on:change="handleFileUpload"
+              @click:append-outer="submitIMG"
+            >
+              <template v-slot:selection="{ index }">
+                <v-img
+                  class="mr-1"
+                  max-width="30px"
+                  max-height="30px"
+                  :src="iconSRC[index]"
+                >
+                </v-img>
+              </template>
+            </v-file-input>
+            <!-- <div v-else>
+              <input type="file" id="file" v-on:change="handleFileUpload"/>
+              <v-btn v-on:click="submitIMG">Submit</v-btn>
+            </div> -->
           </v-col>
           <!-- send smiley button -->
           <v-col cols="1" class="ma-0 pa-0">
@@ -134,8 +147,8 @@ export default {
     marker: false,
     inputType: 'text',
     colorPic: false,
-    file: undefined,
-    img: null,
+    iconSRC: [],
+    files: undefined,
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
@@ -153,9 +166,6 @@ export default {
     }
   },
   methods: {
-    /* log () {
-      console.log(this.$refs.textarea.$options.propsData)
-    }, */
     // load conversation infos between 'from' and 'to'
     async loadConv () {
       const res = await this.axios.post(this.url + '/api/getConv',
@@ -208,42 +218,44 @@ export default {
         this.send(message)
       }
     },
-    // send IMG message (test)
-    submitFile () {
-      let formData = new FormData()
-      formData.append('file', this.file, 'file')
-      console.log(formData)
-
-      this.axios.post(this.url + '/api/upload-file',
-        {
-          formData,
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then(function () {
-          console.log('SUCCESS!!')
-        })
-        .catch(function () {
-          console.log('FAILURE!!')
-        })
-    },
     handleFileUpload () {
-      console.log(this.$refs.file.files)
-      this.file = this.$refs.file.files[0]
-      console.log(this.file)
-    },
-    // send IMG message (current)
-    sendIMG () {
-      let image = {
-        type: 'img',
-        content: this.img,
-        sender: this.user,
-        from: '',
-        date: new Date()
+      this.iconSRC = []
+      for (var i = 0; i < this.files.length; i++) {
+        let self = this
+        var reader = new FileReader()
+        reader.addEventListener('load', function () {
+          self.iconSRC.push(this.result)
+        })
+        reader.readAsDataURL(this.files[i])
       }
-      this.conversation.push(image)
-      this.send(image)
+    },
+    submitIMG () {
+      for (var i = 0; i < this.files.length; i++) {
+        this.createThumbnail(this.files[i])
+      }
+      this.files = undefined
+      this.iconSRC = []
+    },
+    createThumbnail (file) {
+      var reader = new FileReader()
+      let self = this
+      reader.addEventListener('load', function () {
+        var imgElement = document.createElement('img')
+        imgElement.style.maxWidth = '150px'
+        imgElement.style.maxHeight = '150px'
+        imgElement.src = this.result
+
+        let image = {
+          type: 'img',
+          content: imgElement.src,
+          sender: self.user,
+          from: '',
+          date: new Date()
+        }
+        self.conversation.push(image)
+        self.send(image)
+      })
+      reader.readAsDataURL(file)
     },
     // send big smiley message
     sendSmiley () {

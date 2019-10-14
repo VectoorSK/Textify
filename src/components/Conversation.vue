@@ -74,7 +74,7 @@
                 target="_blank"
               >
                 <v-icon class="ml-n1 mr-1">person_pin</v-icon>
-                FIND ME
+                <span>FIND ME</span>
               </v-btn>
             </v-card>
             <!-- loading -->
@@ -92,16 +92,12 @@
               :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
               :style="'background-color: ' + color"
             >
-              <v-dialog max-width="70vw" max-height="80vh">
-                <template v-slot:activator="{ on }">
-                  <v-card class="white pa-2" flat v-on="on">
-                    <v-img src="../../public/picture.png"></v-img>
-                  </v-card>
-                </template>
+              <v-dialog v-model="dialogZoom" max-width="70vw" max-height="80vh" class="ma-0 pa-0">
                 <v-card class="pa-2">
-                  <v-img contain src="../../public/picture.png" max-height="80vh"></v-img>
+                  <v-img contain :src="src" max-height="80vh"></v-img>
                 </v-card>
               </v-dialog>
+              <v-img :src="mess.content" @click="zoom(mess.content)"></v-img>
             </v-card>
             <!-- big smiley -->
             <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
@@ -153,6 +149,8 @@ export default {
     color: String
   },
   data: () => ({
+    dialogZoom: false,
+    src: ''
   }),
   methods: {
     getDateHours (str) {
@@ -165,6 +163,10 @@ export default {
     },
     messSplit (mess) {
       return mess.split('\n')
+    },
+    zoom (src) {
+      this.src = src
+      this.dialogZoom = true
     },
     scrollDown () {
       this.$refs.mylist.$el.scrollTop = this.$refs.mylist.$el.scrollHeight
