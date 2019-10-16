@@ -180,7 +180,7 @@ export default {
     regUsername: '',
     regUsernameRules: [
       v => !!v || 'Missing Username',
-      v => (v && v.length <= 10) || 'Username must be less than 10 characters',
+      v => (v && v.length <= 15) || 'Username must be less than 15 characters',
       v => (v && v.length >= 4) || 'Username must be more than 4 characters',
       v =>
         /^[a-zA-Z0-9]*$/.test(v) ||

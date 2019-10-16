@@ -4,13 +4,12 @@
     <v-app-bar app elevate-on-scroll class="grey lighten-4">
       <!-- open/close nav bar -->
       <v-app-bar-nav-icon class="black--text" v-if="logged" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
-      <!-- name & surname -->
-      <v-expand-x-transition>
+      <!-- username -->
+      <v-slide-x-reverse-transition>
         <v-toolbar-title class="headline text-uppercase font-weight-bold" v-if="!navDrawer">
-          <span>{{ usrLogged.surname }}</span>
-          <span class="font-weight-light">{{ usrLogged.name }}</span>
+          <span>{{ usrLogged.username }}</span>
         </v-toolbar-title>
-      </v-expand-x-transition>
+      </v-slide-x-reverse-transition>
       <v-spacer></v-spacer>
       <!-- logout button -->
       <v-btn v-if="logged" text @click="logout" router to="/login">
@@ -220,6 +219,7 @@ export default {
         this.$session.clear()
         this.$session.destroy()
         this.usrLogged.avatar = 0
+        this.usrLogged.username = ''
         this.usrLogged.name = ''
         this.usrLogged.surname = ''
         this.logged = false

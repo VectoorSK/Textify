@@ -1,7 +1,9 @@
 <template>
   <v-card class="mx-auto pa-2" flat color="grey lighten-4">
     <!-- Description -->
-    <p class="subtitle-1 font-weight-light text-justify">Create your account, set your profile and communicate with all your friends through a responsive web application.</p>
+    <p class="subtitle-1 font-weight-light text-justify">
+      Create your account, set your profile and communicate with all your friends through a responsive web application.
+    </p>
     <!-- JS icon (link) + text -->
     <p class="subtitle-2 font-weight-light">
       <v-btn fab text small class="mt-n1 mb-1" target="_blank" href="https://en.wikipedia.org/wiki/JavaScript">
@@ -32,29 +34,33 @@
     </p>
     <v-divider></v-divider>
     <!-- Developers (+ github link) -->
-    <p class="text-right mt-2 mb-0 subtitle-2 font-italic font-weight-light">
-      Created by
-      <v-tooltip top>
-        <template v-slot:activator="{ on }">
-          <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/Aetaugan">Camille REGIS</a>
-        </template>
-        <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
-        <span>Visit github</span>
-      </v-tooltip>
-      and
-      <v-tooltip top>
-        <template v-slot:activator="{ on }">
-          <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/VectoorSK">Victor BELIN</a>
-        </template>
-        <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
-        <span>Visit github</span>
-      </v-tooltip>
+    <v-row class="mt-1 subtitle-2 font-italic font-weight-light">
+      <div class="ml-4">
+        Created by
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/Aetaugan">Camille REGIS</a>
+          </template>
+          <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
+          <span>Visit github</span>
+        </v-tooltip>
+        and
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <a v-on="on" class="link" :style="'color:' + color" target="_blank" href="https://github.com/VectoorSK">Victor BELIN</a>
+          </template>
+          <v-icon dark class="ml-n1 mr-1">mdi-github-circle</v-icon>
+          <span>Visit github</span>
+        </v-tooltip>
+      </div>
       <v-spacer></v-spacer>
-      <!-- Copyright -->
-      <span class="text-right">
-        <v-icon small class="" :color="color">mdi-copyright</v-icon><span class="subtitle font-weight-regular" :style="'color:' + color">2019</span>
-      </span>
-    </p>
+      <div class="caption text-right mr-4">
+        <!-- Copyright -->
+        <span>
+          <v-icon small :color="color">mdi-copyright</v-icon><span class="subtitle font-weight-regular" :style="'color:' + color">2019</span>
+        </span>
+      </div>
+    </v-row>
   </v-card>
 </template>
 

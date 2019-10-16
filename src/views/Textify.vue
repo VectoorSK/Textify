@@ -83,8 +83,8 @@
               label="Select picture"
               prepend-icon="mdi-camera"
               append-outer-icon="send"
-              v-on:change="handleFileUpload"
-              @click:append-outer="submitIMG"
+              v-on:change="filesChange"
+              @click:append-outer="sendImages"
             >
               <template v-slot:selection="{ index }">
                 <v-img
@@ -96,10 +96,6 @@
                 </v-img>
               </template>
             </v-file-input>
-            <!-- <div v-else>
-              <input type="file" id="file" v-on:change="handleFileUpload"/>
-              <v-btn v-on:click="submitIMG">Submit</v-btn>
-            </div> -->
           </v-col>
           <!-- send smiley button -->
           <v-col cols="1" class="ma-0 pa-0">
@@ -218,7 +214,8 @@ export default {
         this.send(message)
       }
     },
-    handleFileUpload () {
+    // update file to upload and set src of thumbnails (iconSRC)
+    filesChange () {
       this.iconSRC = []
       for (var i = 0; i < this.files.length; i++) {
         let self = this
@@ -229,20 +226,23 @@ export default {
         reader.readAsDataURL(this.files[i])
       }
     },
-    submitIMG () {
+    // send one image message for each images
+    sendImages () {
       for (var i = 0; i < this.files.length; i++) {
-        this.createThumbnail(this.files[i])
+        this.sendImage(this.files[i])
       }
       this.files = undefined
       this.iconSRC = []
     },
-    createThumbnail (file) {
+    // send image message
+    sendImage (file) {
       var reader = new FileReader()
       let self = this
       reader.addEventListener('load', function () {
         var imgElement = document.createElement('img')
         imgElement.style.maxWidth = '150px'
         imgElement.style.maxHeight = '150px'
+        // get image source (bytes)
         imgElement.src = this.result
 
         let image = {
@@ -373,7 +373,10 @@ export default {
               console.warn(`ERREUR in findCity() (${err.code}): ${err.message}`)
               that.town = ''
             } else {
-              let city = data['address'].village ? data['address'].village : data['address'].city ? data['address'].city : data['address'].town ? data['address'].town : data['address'].county
+              let city = data['address'].village ? data['address'].village
+                : data['address'].city ? data['address'].city
+                  : data['address'].town ? data['address'].town
+                    : data['address'].county
               that.marker = true
               that.town = city + ' - ' + data['address'].postcode + ' (' + data['address'].country + ')'
             }

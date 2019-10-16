@@ -100,20 +100,20 @@ const users = [
     date: '05/03/1999',
     description: '➡️ Varazdin 📍\n🎓 Faculty of Organization and Informatics (FOI)\n🍻 Partying\n🎮 Video games',
     colorApp: '#512DA8'
-  },
+  }, /*
   {
     avatar: 43,
     background: 7,
     name: 'Edgar',
     surname: 'Belin',
-    username: 'Edgar',
+    username: 'Vander Aiden',
     password: 'Password123',
     friends: ['Vector', 'Ari'],
     email: 'ebelin@gmail.com',
     date: '01/09/2003',
     description: '➡️ La Celle St Cloud 📍\n🎓 Lycée Passy Buzenval\n🎮 Video games\n📺 Anime',
     colorApp: '#512DA8'
-  },
+  }, */
   {
     avatar: 19,
     background: 8,
