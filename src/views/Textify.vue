@@ -47,12 +47,12 @@
             </v-btn>
             <!-- send picture button -->
             <v-btn icon
-              @click="inputType === 'text' ? inputType = 'file' : inputType = 'text'"
+              @click="inputType === 'text' ? inputType = 'img' : inputType === 'img' ? inputType = 'vid' : inputType = 'text'"
               :color="colorPic ? color : ''"
               @mouseover="colorPic = true"
               @mouseout="colorPic = false"
             >
-              <v-icon>{{ inputType === 'text' ? 'add_photo_alternate' : 'subject' }}</v-icon>
+              <v-icon>{{ inputType === 'text' ? 'subject' : inputType === 'img' ? 'add_photo_alternate' : 'mdi-video' }}</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="8" class="ma-0 pa-0" align="center">
@@ -73,15 +73,14 @@
               auto-grow
               ref="textarea"
             ></v-textarea>
-            <!-- input file -->
+            <!-- input image -->
             <v-file-input
+              v-else-if="inputType === 'img'"
               v-model="files"
-              v-else
               id="file"
               multiple
               accept="image/*"
               label="Select picture"
-              prepend-icon="mdi-camera"
               append-outer-icon="send"
               v-on:change="filesChange"
               @click:append-outer="sendImages"
@@ -96,6 +95,17 @@
                 </v-img>
               </template>
             </v-file-input>
+            <!-- input video -->
+            <v-file-input
+              v-else-if="inputType === 'vid'"
+              v-model="video"
+              id="file"
+              accept="video/*"
+              label="Select video"
+              append-outer-icon="send"
+              v-on:change="vidChange"
+              @click:append-outer="sendVideo"
+            ></v-file-input>
           </v-col>
           <!-- send smiley button -->
           <v-col cols="1" class="ma-0 pa-0">
@@ -145,6 +155,7 @@ export default {
     colorPic: false,
     iconSRC: [],
     files: undefined,
+    video: undefined,
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
@@ -214,6 +225,33 @@ export default {
         this.send(message)
       }
     },
+    // update video to upload
+    vidChange () {
+      console.log(this.video)
+    },
+    sendVideo () {
+      this.sendVid(this.video)
+    },
+    // send image message
+    sendVid (file) {
+      var reader = new FileReader()
+      let self = this
+      reader.addEventListener('load', function () {
+        // get image source (bytes)
+        // console.log(this.result)
+
+        let video = {
+          type: 'video',
+          content: this.result,
+          sender: self.user,
+          from: '',
+          date: new Date()
+        }
+        self.conversation.push(video)
+        self.send(video)
+      })
+      reader.readAsDataURL(file)
+    },
     // update file to upload and set src of thumbnails (iconSRC)
     filesChange () {
       this.iconSRC = []
@@ -244,6 +282,7 @@ export default {
         imgElement.style.maxHeight = '150px'
         // get image source (bytes)
         imgElement.src = this.result
+        // console.log(this.result)
 
         let image = {
           type: 'img',

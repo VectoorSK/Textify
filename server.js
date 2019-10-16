@@ -18,9 +18,14 @@ app.use(session({
   cookie: { secure: false } // ne changez que si vous avez activé le https
 }))
 app.use(morgan('dev'))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '10mb' }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist/')))
+// not working
+// app.use(express.limit(100000000))
+// app.use(express.bodyParser({ limit: '50mb' }))
+// app.use(bodyParser.json({ limit: '10mb' }))
+// app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
 
 const users = [
   {

@@ -21,9 +21,9 @@
         Go to homepage
       </v-btn>
     </v-row>
-    <!-- <audio controls ref="audio">
+    <audio controls ref="audio">
       <source src="../../public/sound.mp3">
-    </audio> -->
+    </audio>
   </v-card>
 </template>
 
