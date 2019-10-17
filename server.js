@@ -18,7 +18,7 @@ app.use(session({
   cookie: { secure: false } // ne changez que si vous avez activé le https
 }))
 app.use(morgan('dev'))
-app.use(bodyParser.json({ limit: '10mb' }))
+app.use(bodyParser.json({ limit: '50mb' }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist/')))
 // not working

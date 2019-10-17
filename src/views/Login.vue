@@ -165,7 +165,7 @@ export default {
   data: () => ({
     url: 'http://localhost:4000',
     activeTab: 'tab-Login',
-    show1: true,
+    show1: false,
     valid: false,
     errorReg: null,
     name: '',
