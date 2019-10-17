@@ -102,14 +102,25 @@
             <!-- videos -->
             <v-card
               v-else-if="mess.type === 'video'"
-              max-width="35%"
-              class="my-1 pa-2"
+              class="my-1 pa-2 pb-0"
+              rounded
               :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
               :style="'background-color: ' + color"
             >
               <video height="240" controls>
                 <source :src="mess.content">
               </video>
+            </v-card>
+            <!-- audios -->
+            <v-card
+              v-else-if="mess.type === 'audio'"
+              class="my-1 pa-1 pb-0"
+              :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
+              :style="'background-color: ' + color"
+            >
+              <audio controls>
+                <source :src="mess.content">
+              </audio>
             </v-card>
             <!-- big smiley -->
             <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>

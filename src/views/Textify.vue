@@ -47,12 +47,15 @@
             </v-btn>
             <!-- send picture button -->
             <v-btn icon
-              @click="inputType === 'text' ? inputType = 'img' : inputType === 'img' ? inputType = 'vid' : inputType = 'text'"
+              @click="inputType === 'text' ? inputType = 'img'
+                : inputType === 'img' ? inputType = 'vid'
+                : inputType === 'vid' ? inputType = 'aud'
+                : inputType = 'text'"
               :color="colorPic ? color : ''"
               @mouseover="colorPic = true"
               @mouseout="colorPic = false"
             >
-              <v-icon>{{ inputType === 'text' ? 'subject' : inputType === 'img' ? 'add_photo_alternate' : 'mdi-video' }}</v-icon>
+              <v-icon>{{ inputType === 'text' ? 'subject' : inputType === 'img' ? 'add_photo_alternate' : inputType === 'vid' ? 'mdi-video' : 'mdi-music' }}</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="8" class="ma-0 pa-0" align="center">
@@ -105,7 +108,40 @@
               append-outer-icon="send"
               v-on:change="vidChange"
               @click:append-outer="sendVideo"
-            ></v-file-input>
+            >
+              <template v-slot:selection="{ text }">
+                <v-chip
+                  :color="color"
+                  dark
+                  label
+                  small
+                >
+                  {{ text }}
+                </v-chip>
+              </template>
+            </v-file-input>
+            <!-- input audio (music) -->
+            <v-file-input
+              v-else-if="inputType === 'aud'"
+              v-model="audio"
+              id="file"
+              accept="audio/*"
+              label="Select audio"
+              append-outer-icon="send"
+              v-on:change="audChange"
+              @click:append-outer="sendAudio"
+            >
+              <template v-slot:selection="{ text }">
+                <v-chip
+                  :color="color"
+                  dark
+                  label
+                  small
+                >
+                  {{ text }}
+                </v-chip>
+              </template>
+            </v-file-input>
           </v-col>
           <!-- send smiley button -->
           <v-col cols="1" class="ma-0 pa-0">
@@ -156,6 +192,7 @@ export default {
     iconSRC: [],
     files: undefined,
     video: undefined,
+    audio: undefined,
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
@@ -225,15 +262,34 @@ export default {
         this.send(message)
       }
     },
-    // update video to upload
+    audChange () {
+      console.log(this.video)
+    },
+    // send audio message
+    sendAudio () {
+      var reader = new FileReader()
+      let self = this
+      reader.addEventListener('load', function () {
+        // get image source (bytes)
+        // console.log(this.result)
+
+        let audio = {
+          type: 'audio',
+          content: this.result,
+          sender: self.user,
+          from: '',
+          date: new Date()
+        }
+        self.conversation.push(audio)
+        self.send(audio)
+      })
+      reader.readAsDataURL(this.audio)
+    },
     vidChange () {
       console.log(this.video)
     },
+    // send video message
     sendVideo () {
-      this.sendVid(this.video)
-    },
-    // send image message
-    sendVid (file) {
       var reader = new FileReader()
       let self = this
       reader.addEventListener('load', function () {
@@ -250,7 +306,7 @@ export default {
         self.conversation.push(video)
         self.send(video)
       })
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(this.video)
     },
     // update file to upload and set src of thumbnails (iconSRC)
     filesChange () {
