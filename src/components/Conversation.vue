@@ -8,7 +8,7 @@
   >
     <v-list color="grey lighten-5" class="py-0">
       <v-list-item-group>
-        <v-list-item v-for="(mess, id) in conversation" :key="id" justify="center">
+        <v-list-item v-for="(mess, id) in conversation" :key="id" inactive selectable>
           <v-spacer v-if="mess.sender === user"></v-spacer>
           <!-- icon localisation (gauche) -->
           <v-tooltip
@@ -112,16 +112,16 @@
               </video>
             </v-card>
             <!-- audios -->
-            <v-card
+            <div
               v-else-if="mess.type === 'audio'"
               class="my-1 pa-1 pb-0"
               :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
-              :style="'background-color: ' + color"
+              :style="'background-color: ' + color + ';border-radius: 30px'"
             >
               <audio controls>
                 <source :src="mess.content">
               </audio>
-            </v-card>
+            </div>
             <!-- big smiley -->
             <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
           </v-scroll-y-transition>

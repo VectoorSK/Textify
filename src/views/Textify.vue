@@ -1,7 +1,7 @@
 <template>
   <div id="textify">
     <!-- CONTAINER (w/ border) -->
-    <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
         flat
         class="mx-auto overflow-hidden pa-0"
@@ -47,14 +47,12 @@
             </v-btn>
             <!-- send picture button -->
             <v-btn icon
-              @click="inputType === 'text' ? inputType = 'img'
-                : inputType === 'img' ? inputType = 'file'
-                : inputType = 'text'"
+              @click="inputType === 'text' ? inputType = 'file' : inputType = 'text'"
               :color="colorPic ? color : ''"
               @mouseover="colorPic = true"
               @mouseout="colorPic = false"
             >
-              <v-icon>{{ inputType === 'text' ? 'subject' : inputType === 'img' ? 'add_photo_alternate' : 'mdi-upload' }}</v-icon>
+              <v-icon>{{ inputType === 'text' ? 'mdi-upload' : 'mdi-text-subject' }}</v-icon>
             </v-btn>
           </v-col>
           <v-col cols="8" class="ma-0 pa-0" align="center">
@@ -68,53 +66,49 @@
               label="Message"
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
-              @keyup.shift.enter="sendMessage"
-              @click:clear="this.message = ''"
+              @keypress.shift.enter="sendMessage"
+              @click:clear="message = ''"
               :color="color"
               rows="1"
               auto-grow
               ref="textarea"
             ></v-textarea>
-            <!-- input image -->
-            <v-file-input
-              v-else-if="inputType === 'img'"
-              v-model="files"
-              id="file"
-              multiple
-              accept="image/*"
-              label="Select picture"
-              append-outer-icon="send"
-              v-on:change="filesChange"
-              @click:append-outer="sendImages"
-            >
-              <template v-slot:selection="{ index }">
-                <v-img
-                  class="mr-1"
-                  max-width="30px"
-                  max-height="30px"
-                  :src="iconSRC[index]"
-                >
-                </v-img>
-              </template>
-            </v-file-input>
             <!-- input video / audio -->
             <v-file-input
               v-else-if="inputType === 'file'"
               v-model="file"
-              accept="audio/*,video/*"
-              label="Select file (audio, video)"
+              multiple
+              accept="image/*,audio/*,video/*"
+              label="Select file (image, audio, video)"
               append-outer-icon="send"
-              @click:append-outer="sendFile"
+              v-on:change="filesChange"
+              @click:append-outer="sendFiles"
             >
-              <template v-slot:selection="{ text }">
+              <template v-slot:selection="{ index, text }">
+                <v-img
+                  v-if="file[index].type.includes('image') && index < 50"
+                  class="mr-1"
+                  max-width="30px"
+                  max-height="30px"
+                  :src="iconSRC[index]"
+                ></v-img>
                 <v-chip
+                  v-if="!file[index].type.includes('image') && index < 50"
                   :color="color"
                   dark
-                  label
+                  outlined
+                  pill
                   small
                 >
+                  <v-icon left>{{ file[index].type.includes('audio') ? 'mdi-music' : 'mdi-youtube' }}</v-icon>
                   {{ text }}
                 </v-chip>
+                <span
+                  v-else-if="index === 50"
+                  class="overline grey--text text--darken-3 mx-2"
+                >
+                  +{{ file.length - 5 }} File(s)
+                </span>
               </template>
             </v-file-input>
           </v-col>
@@ -165,10 +159,7 @@ export default {
     inputType: 'text',
     colorPic: false,
     iconSRC: [],
-    files: undefined,
     file: undefined,
-    video: undefined,
-    audio: undefined,
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
@@ -238,16 +229,25 @@ export default {
         this.send(message)
       }
     },
-    // send audio message
-    sendFile () {
+    // send one audio/video message for each files
+    sendFiles () {
+      console.log(this.file)
+      for (let i = 0; i < this.file.length; i++) {
+        this.sendFile(this.file[i])
+      }
+      this.file = null
+      this.iconSRC = []
+    },
+    // send audio/video message
+    sendFile (f) {
       var reader = new FileReader()
       let self = this
       reader.addEventListener('load', function () {
         // get image source (bytes)
         // console.log(this.result)
-        let type = self.file.type.includes('image') ? 'image'
-          : self.file.type.includes('audio') ? 'audio'
-            : self.file.type.includes('video') ? 'video' : ''
+        let type = f.type.includes('image') ? 'img'
+          : f.type.includes('audio') ? 'audio'
+            : f.type.includes('video') ? 'video' : ''
 
         let file = {
           type: type,
@@ -258,75 +258,26 @@ export default {
         }
         self.conversation.push(file)
         self.send(file)
+        self.file = null
       })
-      reader.readAsDataURL(this.file)
-    },
-    vidChange () {
-      console.log(this.video)
-    },
-    // send video message
-    sendVideo () {
-      var reader = new FileReader()
-      let self = this
-      reader.addEventListener('load', function () {
-        // get image source (bytes)
-        // console.log(this.result)
-
-        let video = {
-          type: 'video',
-          content: this.result,
-          sender: self.user,
-          from: '',
-          date: new Date()
-        }
-        self.conversation.push(video)
-        self.send(video)
-      })
-      reader.readAsDataURL(this.video)
+      reader.readAsDataURL(f)
     },
     // update file to upload and set src of thumbnails (iconSRC)
     filesChange () {
       this.iconSRC = []
-      for (var i = 0; i < this.files.length; i++) {
+      for (var i = 0; i < this.file.length; i++) {
         let self = this
+        let type = this.file[i].type.includes('image')
         var reader = new FileReader()
         reader.addEventListener('load', function () {
-          self.iconSRC.push(this.result)
+          if (type) {
+            self.iconSRC.push(this.result)
+          } else {
+            self.iconSRC.push('not_img')
+          }
         })
-        reader.readAsDataURL(this.files[i])
+        reader.readAsDataURL(this.file[i])
       }
-    },
-    // send one image message for each images
-    sendImages () {
-      for (var i = 0; i < this.files.length; i++) {
-        this.sendImage(this.files[i])
-      }
-      this.files = undefined
-      this.iconSRC = []
-    },
-    // send image message
-    sendImage (file) {
-      var reader = new FileReader()
-      let self = this
-      reader.addEventListener('load', function () {
-        var imgElement = document.createElement('img')
-        imgElement.style.maxWidth = '150px'
-        imgElement.style.maxHeight = '150px'
-        // get image source (bytes)
-        imgElement.src = this.result
-        // console.log(this.result)
-
-        let image = {
-          type: 'img',
-          content: imgElement.src,
-          sender: self.user,
-          from: '',
-          date: new Date()
-        }
-        self.conversation.push(image)
-        self.send(image)
-      })
-      reader.readAsDataURL(file)
     },
     // send big smiley message
     sendSmiley () {
@@ -483,7 +434,8 @@ export default {
     },
     // openstreet map link for reverse geocoding
     jsonLink: function () {
-      return 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + this.latitude + '&lon=' + this.longitude + '&zoom=18&addressdetails=1'
+      return 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
+        this.latitude + '&lon=' + this.longitude + '&zoom=18&addressdetails=1'
     }
   },
   watch: {

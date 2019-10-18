@@ -1,7 +1,7 @@
 <template>
   <div id="friends">
     <!-- CONTAINER (w/ border) -->
-    <v-card class="pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
       <v-card
         flat
         class="mx-auto overflow-hidden pa-0"
