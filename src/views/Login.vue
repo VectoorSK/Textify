@@ -258,6 +258,7 @@ export default {
     save (date) {
       this.$refs.menu.save(date)
     },
+    // submit user to server (registration)
     submit () {
       const user = {
         avatar: 0,
@@ -286,6 +287,7 @@ export default {
           console.log(error.response)
         })
     },
+    // submit user to server (login)
     async login () {
       try {
         const res = await this.axios.post(this.url + '/api/login', {
@@ -321,6 +323,7 @@ export default {
 </script>
 
 <style scoped>
+/* disable button (without changing color) */
 .disable-events {
   pointer-events: none
 }
