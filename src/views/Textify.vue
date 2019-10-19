@@ -15,7 +15,7 @@
             <!-- TOP BAR (friend info) -->
             <SettingBar v-model="currentSmiley" :friendlist="userFriends" :friend="friendLoad" :color="color"></SettingBar>
             <!-- CONVERSATION WINDOW -->
-            <Conversation :conversation="conversation" :to_seen="to_seen" :user="user" :color="color"></Conversation>
+            <Conversation :conversation="conversation" :to_seen="to_seen" :user="user" :color="color" :size="convSize"></Conversation>
           </v-col>
         </v-row>
         <v-row v-if="friendLoad !== null" align="center" justify="center">
@@ -63,17 +63,17 @@
               :append-icon="marker ? 'mdi-map-marker' : 'mdi-map-marker-off'"
               append-outer-icon="send"
               clearable
+              no-resize
               label="Message"
               @click:append="chgMarker"
               @click:append-outer="sendMessage"
-              @keypress.shift.enter="sendMessage"
-              @click:clear="message = ''"
+              @keyup.shift.enter="sendMessage"
+              @click:clear="clearMessage"
               :color="color"
-              rows="1"
-              auto-grow
+              :rows="nbRow"
               ref="textarea"
             ></v-textarea>
-            <!-- input video / audio -->
+            <!-- input image / audio / video -->
             <v-file-input
               v-else-if="inputType === 'file'"
               v-model="file"
@@ -83,6 +83,7 @@
               append-outer-icon="send"
               v-on:change="filesChange"
               @click:append-outer="sendFiles"
+              ref="fileinput"
             >
               <template v-slot:selection="{ index, text }">
                 <v-img
@@ -121,7 +122,6 @@
         </v-row>
       </v-card>
     </v-card>
-    <!-- <v-btn @click="log">log</v-btn> -->
   </div>
 </template>
 
@@ -163,7 +163,9 @@ export default {
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
-    url: 'http://localhost:4000'
+    url: 'http://localhost:4000',
+    nbRow: 1,
+    convSize: 58
   }),
   mounted: function () {
     if (this.$session.exists()) {
@@ -177,6 +179,12 @@ export default {
     }
   },
   methods: {
+    adaptConvHeight () {
+      if (this.message !== null) {
+        this.nbRow = this.message.split('\n').length < 8 ? this.message.split('\n').length : 7
+        this.convSize = 58 - 2.45 * (this.nbRow - 1)
+      }
+    },
     // load conversation infos between 'from' and 'to'
     async loadConv () {
       const res = await this.axios.post(this.url + '/api/getConv',
@@ -211,6 +219,10 @@ export default {
         this.from_seen = true
         this.to_seen = false
       }
+    },
+    // clear text message
+    clearMessage () {
+      setTimeout(() => { this.message = '' }, 0)
     },
     // send text message
     sendMessage () {
@@ -447,6 +459,9 @@ export default {
       }
       this.color = this.$session.get('colorApp')
       this.loadConv()
+    },
+    message: function () {
+      this.adaptConvHeight()
     }
   }
 }

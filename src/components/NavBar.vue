@@ -175,7 +175,7 @@ export default {
         this.usrLogged.surname = this.$session.get('surname')
         this.color = this.$session.get('colorApp')
         if (this.logged === false && src === 'route') {
-          this.snackbarText = 'Hello ' + this.usrLogged.username + '. Welcome back!'
+          this.snackbarText = 'Hello ' + this.usrLogged.username + '. Welcome!'
           this.snackbar = true
         }
         this.logged = true

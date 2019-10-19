@@ -3,7 +3,7 @@
   <v-card
     flat
     class="overflow-y-auto"
-    height="55vh"
+    :height="size + 'vh'"
     ref="mylist"
   >
     <v-list color="grey lighten-5" class="py-0">
@@ -169,7 +169,8 @@ export default {
     conversation: Array,
     to_seen: Boolean,
     user: String,
-    color: String
+    color: String,
+    size: Number
   },
   data: () => ({
     dialogZoom: false,

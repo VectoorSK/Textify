@@ -707,7 +707,7 @@ app.post('/api/login', (req, res) => {
           message: 'Wrong Password'
         })
       } else {
-        res.json({
+        res.status(200).json({
           user: user
         })
       }
