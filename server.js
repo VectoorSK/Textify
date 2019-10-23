@@ -21,11 +21,6 @@ app.use(morgan('dev'))
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist/')))
-// not working
-// app.use(express.limit(100000000))
-// app.use(express.bodyParser({ limit: '50mb' }))
-// app.use(bodyParser.json({ limit: '10mb' }))
-// app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
 
 const users = [
   {
@@ -171,14 +166,14 @@ const conversations = [
       },
       {
         type: 'text',
-        content: "Bah ouais j'suis chaud 😎, tu sais combien c'est ? Et sinon après on peut toujours squatter chez moi à La Celle si ca te va. Je crois qu'il me reste des bières de Samedi dernier 🍻",
+        content: "Bah ouais j'suis chaud 😎, tu sais combien c'est ? Et sinon après on peut toujours squatter chez moi si ca te va. Je crois qu'il me reste des bières de Samedi dernier 🍻",
         sender: 'Vector',
         from: 'Rueil Malmaison - 92500 (France)',
         date: new Date()
       },
       {
         type: 'text',
-        content: 'Okay, ca marche. Bah vas-y je regarde ca avec la team et je te confirme ca! 😘',
+        content: 'A peu près 40 balles. Okay, ca marche. Bah vas-y je regarde ca avec la team et je te confirme ca! 😘',
         sender: 'Aetaugan',
         from: 'Fontainebleau - 77920 (France)',
         date: new Date()

@@ -3,10 +3,12 @@
     <!-- TOP BAR -->
     <v-app-bar app elevate-on-scroll class="grey lighten-4">
       <!-- open/close nav bar -->
-      <v-app-bar-nav-icon class="black--text" v-if="logged" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
+      <v-slide-x-reverse-transition>
+        <v-app-bar-nav-icon class="black--text" v-if="!navDrawer" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
+      </v-slide-x-reverse-transition>
       <!-- username -->
       <v-slide-x-reverse-transition>
-        <v-toolbar-title class="headline text-uppercase font-weight-bold" v-if="!navDrawer">
+        <v-toolbar-title v-if="!navDrawer" class="headline text-uppercase font-weight-bold">
           <span>{{ usrLogged.username }}</span>
         </v-toolbar-title>
       </v-slide-x-reverse-transition>
@@ -20,6 +22,10 @@
 
     <!-- NAVIGATION BAR (left) -->
     <v-navigation-drawer app disable-resize-watcher :temporary="false" v-model="navDrawer" v-if="logged" :color="color">
+      <!-- open/close nav bar -->
+      <v-btn dark icon large class="mt-3 mb-n3 ml-1" @click="navDrawer = !navDrawer">
+        <v-icon size="24">mdi-menu</v-icon>
+      </v-btn>
       <v-col align="center">
         <!-- profile picture -->
         <v-avatar color="blue-grey lighten-4" class="mt-5" size="130">

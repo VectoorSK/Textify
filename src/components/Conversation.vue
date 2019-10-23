@@ -116,7 +116,7 @@
               v-else-if="mess.type === 'audio'"
               class="my-1 pa-1 pb-0"
               :class="mess.sender === user ? 'white--text ml-2' : 'grey lighten-4 black--text mr-2'"
-              :style="'background-color: ' + color + ';border-radius: 30px'"
+              :style="'background-color: ' + color + ';border-radius: ' + ($browserDetect.isChrome ? '30' : '3') + 'px'"
             >
               <audio controls>
                 <source :src="mess.content">
