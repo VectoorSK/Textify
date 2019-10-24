@@ -157,15 +157,15 @@ export default {
     message: '',
     marker: false,
     inputType: 'text',
-    colorPic: false,
-    iconSRC: [],
     file: undefined,
+    iconSRC: [],
+    nbRow: 1,
+    convSize: 58,
+    colorPic: false,
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
-    url: 'http://localhost:4000',
-    nbRow: 1,
-    convSize: 58
+    url: '' // 'http://localhost:4000'
   }),
   mounted: function () {
     if (this.$session.exists()) {

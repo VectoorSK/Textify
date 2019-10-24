@@ -166,7 +166,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     // prod
-    url: 'http://localhost:4000'
+    url: '' // 'http://localhost:4000'
   }),
   mounted () {
     this.load('mount')

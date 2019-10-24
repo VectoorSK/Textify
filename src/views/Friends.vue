@@ -1,13 +1,13 @@
 <template>
-  <div id="friends">
+  <div id="friends" class="px-1">
     <!-- CONTAINER (w/ border) -->
-    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="358">
       <v-card
         flat
         class="mx-auto overflow-hidden pa-0"
         height="80vh"
         max-width="55vw"
-        min-width="550"
+        min-width="350"
         color="blue-grey lighten-4"
       >
         <v-row justify="center">
@@ -67,7 +67,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     // prod
-    url: 'http://localhost:4000'
+    url: '' // 'http://localhost:4000'
   }),
   mounted: function () {
     if (!this.$session.exists()) {

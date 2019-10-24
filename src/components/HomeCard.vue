@@ -54,7 +54,7 @@
         </v-tooltip>
       </div>
       <v-spacer></v-spacer>
-      <div class="caption text-right mr-4">
+      <div class="caption text-right ml-4 mr-4">
         <!-- Copyright -->
         <span>
           <v-icon small :color="color">mdi-copyright</v-icon><span class="subtitle font-weight-regular" :style="'color:' + color">2019</span>

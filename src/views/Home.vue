@@ -1,5 +1,5 @@
 <template>
-  <v-card min-width="400" flat color="grey lighten-4">
+  <v-card min-width="350" flat color="grey lighten-4">
     <!-- TITLE -->
     <v-row class="mb-4">
       <v-col cols="12" :md="!logged ? '7' : '12'">
@@ -20,7 +20,7 @@
       </v-col>
     </v-row>
     <!-- PRESESENTATION CARD -->
-    <v-row class="mx-5" v-if="animate">
+    <v-row class="mx-0" v-if="animate">
       <v-col cols="12" :md="!logged ? '7' : '12'">
         <HomeCard :color="color"></HomeCard>
       </v-col>

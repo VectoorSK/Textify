@@ -1,7 +1,3 @@
-/*
- entrez la commande suivante:
- npm install --save express express-session body-parser morgan cors
-*/
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
@@ -100,7 +96,7 @@ const users = [
     date: '05/03/1999',
     description: '➡️ Varazdin 📍\n🎓 Faculty of Organization and Informatics (FOI)\n🍻 Partying\n🎮 Video games',
     colorApp: '#512DA8'
-  }, /*
+  },
   {
     avatar: 43,
     background: 7,
@@ -113,7 +109,7 @@ const users = [
     date: '01/09/2003',
     description: '➡️ La Celle St Cloud 📍\n🎓 Lycée Passy Buzenval\n🎮 Video games\n📺 Anime',
     colorApp: '#512DA8'
-  }, */
+  },
   {
     avatar: 19,
     background: 8,
@@ -374,7 +370,6 @@ app.post('/api/getFriendProfile', (req, res) => {
 })
 
 app.post('/api/addFriend', (req, res) => {
-  console.log('req.body', req.body)
   const username = req.body.username
   const friend = req.body.friend
 
@@ -414,8 +409,6 @@ app.post('/api/addFriend', (req, res) => {
 })
 
 app.post('/api/delFriend', (req, res) => {
-  console.log('req.query', req.query)
-  console.log('req.body', req.body)
   const username = req.body.username
   const fname = req.body.friend
   let done = 0
@@ -452,7 +445,6 @@ app.post('/api/delFriend', (req, res) => {
 app.post('/api/getNotif', (req, res) => {
   const username = req.body.username
   const convs = conversations.filter(c => (c.from === username || c.to === username))
-  // console.log(convs)
   let notif = 0
   if (convs) {
     for (const conv of convs) {
@@ -642,10 +634,6 @@ app.post('/api/sendMess', (req, res) => {
   }
 })
 
-app.post('/api/upload-file', (req, res) => {
-  console.log(req)
-})
-
 app.post('/api/addUser', (req, res) => {
   const userCheck = users.find(u => u.username === req.body.user.username)
   const emailCheck = users.find(u => u.email === req.body.user.email)
@@ -686,9 +674,6 @@ app.post('/api/changeSettings', (req, res) => {
 })
 
 app.post('/api/login', (req, res) => {
-  console.log('req.query', req.query)
-  console.log('req.body', req.body)
-
   if (!req.session.userId) {
     // connect the user
     const user = users.find(u => u.username === req.body.username)
