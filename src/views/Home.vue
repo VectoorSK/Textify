@@ -1,5 +1,5 @@
 <template>
-  <v-card min-width="350" flat color="grey lighten-4">
+  <v-card min-width="320" flat color="grey lighten-4">
     <!-- TITLE -->
     <v-row class="mb-4">
       <v-col cols="12" :md="!logged ? '7' : '12'">
