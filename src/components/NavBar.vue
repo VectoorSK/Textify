@@ -83,7 +83,7 @@
     </v-navigation-drawer>
 
     <!-- FOOTER BAR -->
-    <v-footer app fixed inset class="grey lighten-4">
+    <v-footer app fixed inset v-if="!$vuetify.breakpoint.xsOnly" class="grey lighten-4">
       <!-- change color menu w/ tooltip -->
       <v-menu right top offset-y offset-x :close-on-content-click="false" v-model="colorMenuFooter">
         <template v-slot:activator="{ on: menu }">
@@ -166,7 +166,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     // prod
-    url: '' // '' // 'http://localhost:4000'
+    url: '' // 'http://localhost:4000'
   }),
   mounted () {
     this.load('mount')
