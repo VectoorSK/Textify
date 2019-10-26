@@ -181,6 +181,7 @@ export default {
       this.loadConv()
       if (this.$vuetify.breakpoint.smAndDown) {
         this.baseConvSize = 52
+        this.adaptConvHeight()
       }
     } else {
       this.$router.push('/')
