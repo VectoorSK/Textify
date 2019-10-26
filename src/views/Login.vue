@@ -252,7 +252,7 @@ export default {
     ],
     menu: false,
     // prod:
-    url: 'http://localhost:4000'
+    url: '' // 'http://localhost:4000'
   }),
   methods: {
     save (date) {
