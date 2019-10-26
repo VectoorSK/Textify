@@ -6,11 +6,10 @@
         <v-img v-bind:src="path"></v-img>
       </v-avatar>
       <!-- FRIEND NAME, SURNAME & USERNAME -->
-      <span class="mr-2">{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
+      <span class="mr-2 subtitle-2">{{ friend && friend.name + ' ' + friend.surname + ' (' + friend.username + ')' }}</span>
       <!-- SELECT FRIEND -->
-      <v-col cols="4" class="ma-0 pa-0">
+      <v-col cols="4" v-if="friend === null" class="ma-0 pa-0">
         <v-select
-          v-if="friend === null"
           v-model="to"
           :items="friendlist"
           @change="selectFriend"

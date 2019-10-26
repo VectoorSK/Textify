@@ -1,13 +1,13 @@
 <template>
   <div id="textify">
     <!-- CONTAINER (w/ border) -->
-    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="560">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="338">
       <v-card
         flat
         class="mx-auto overflow-hidden pa-0"
         height="80vh"
         max-width="55vw"
-        min-width="550"
+        min-width="330"
         color="blue-grey lighten-4"
       >
         <v-row justify="center">
@@ -20,7 +20,7 @@
         </v-row>
         <v-row v-if="friendLoad !== null" align="center" justify="center">
           <!-- INPUT BAR (bottom) -->
-          <v-col cols="2" class="ma-0 pa-0">
+          <v-col cols="10" md="3" class="ma-0 pa-0">
             <!-- select smiley button -->
             <v-menu top offset-y height="240" max-width="28vw" min-width="300" :close-on-content-click="false" v-model="emojiTabOpen">
               <template v-slot:activator="{ on }">
@@ -54,9 +54,13 @@
             >
               <v-icon>{{ inputType === 'text' ? 'mdi-upload' : 'mdi-text-subject' }}</v-icon>
             </v-btn>
+            <!-- send smiley button -->
+            <v-btn v-if="$vuetify.breakpoint.smAndDown" text fab @click="sendSmiley" style="font-size: 1.5em">
+              {{ currentSmiley }}
+            </v-btn>
           </v-col>
-          <v-col cols="8" class="ma-0 pa-0" align="center">
-            <!-- input textarea -->
+          <!-- input textarea -->
+          <v-col cols="10" md="7" class="ma-0 pa-0" align="center">
             <v-textarea
               v-if="inputType === 'text'"
               v-model="message"
@@ -114,7 +118,7 @@
             </v-file-input>
           </v-col>
           <!-- send smiley button -->
-          <v-col cols="1" class="ma-0 pa-0">
+          <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="1" class="ma-0 pa-0">
             <v-btn text fab @click="sendSmiley" style="font-size: 1.5em">
               {{ currentSmiley }}
             </v-btn>
@@ -160,6 +164,7 @@ export default {
     file: undefined,
     iconSRC: [],
     nbRow: 1,
+    baseConvSize: 58,
     convSize: 58,
     colorPic: false,
     // big smiley button:
@@ -174,6 +179,9 @@ export default {
       this.userFriends = this.$session.get('friends')
       this.to = this.$route.params.username
       this.loadConv()
+      if (this.$vuetify.breakpoint.smAndDown) {
+        this.baseConvSize = 52
+      }
     } else {
       this.$router.push('/')
     }
@@ -194,7 +202,7 @@ export default {
     adaptConvHeight () {
       if (this.message !== null) {
         this.nbRow = this.message.split('\n').length < 8 ? this.message.split('\n').length : 7
-        this.convSize = 58 - 2.45 * (this.nbRow - 1)
+        this.convSize = this.baseConvSize - 2.45 * (this.nbRow - 1)
       }
     },
     // load conversation infos between 'from' and 'to'
@@ -474,6 +482,14 @@ export default {
       this.loadConv()
     },
     message: function () {
+      this.adaptConvHeight()
+    },
+    '$vuetify.breakpoint.smAndDown': function () {
+      if (this.$vuetify.breakpoint.smAndDown) {
+        this.baseConvSize -= 6
+      } else {
+        this.baseConvSize += 6
+      }
       this.adaptConvHeight()
     }
   }

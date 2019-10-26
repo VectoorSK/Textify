@@ -24,7 +24,7 @@
       <v-list-item-group>
         <!-- FRIEND LIST -->
         <v-list-item v-for="(frd, id) in friendlist" :key="id" @click="goToTextify(frd.username)" class="pa-0">
-          <v-row align="center" justify="space-between" class="ma-0">
+          <v-row align="center" justify="space-between" class="ma-0 pa-0">
             <v-col cols="4" md="3">
               <!-- open friend profile button -->
               <v-btn icon small @click.stop="openProfile(frd.username)">

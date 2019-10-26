@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="408">
-      <v-card class="mx-auto" flat max-width="400">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" min-width="258" max-width="408">
+      <v-card class="mx-auto" flat min-width="250" max-width="400">
         <!-- Background picture -->
         <v-img
           class="white--text"

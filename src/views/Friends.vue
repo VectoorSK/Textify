@@ -1,13 +1,13 @@
 <template>
   <div id="friends" class="px-1">
     <!-- CONTAINER (w/ border) -->
-    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="328">
+    <v-card class="elevation-2 pa-1 mx-auto" :color="color" max-width="55vw" min-width="338">
       <v-card
         flat
         class="mx-auto overflow-hidden pa-0"
         height="80vh"
         max-width="55vw"
-        min-width="320"
+        min-width="330"
         color="blue-grey lighten-4"
       >
         <v-row justify="center">
