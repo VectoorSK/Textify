@@ -1,7 +1,7 @@
 <template>
   <nav>
     <!-- TOP BAR -->
-    <v-app-bar app :elevate-on-scroll="logged" class="grey lighten-4">
+    <v-app-bar app elevate-on-scroll class="grey lighten-4">
       <!-- open/close nav bar -->
       <v-slide-x-reverse-transition>
         <v-app-bar-nav-icon class="black--text" v-if="!navDrawer" @click="navDrawer = !navDrawer"></v-app-bar-nav-icon>
@@ -166,7 +166,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     // prod
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000'
   }),
   mounted () {
     this.load('mount')

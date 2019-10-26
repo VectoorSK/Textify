@@ -165,7 +165,7 @@ export default {
     // big smiley button:
     currentSmiley: '🙂',
     // prod:
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000'
   }),
   mounted: function () {
     if (this.$session.exists()) {
@@ -179,6 +179,18 @@ export default {
     }
   },
   methods: {
+    async hasConvChange () {
+      const rep = await this.axios.post(this.url + '/api/updateConv',
+        {
+          username: this.user,
+          friend: this.to,
+          length: this.conversation.length
+        }
+      )
+      if (rep) {
+        this.loadConv()
+      }
+    },
     adaptConvHeight () {
       if (this.message !== null) {
         this.nbRow = this.message.split('\n').length < 8 ? this.message.split('\n').length : 7
@@ -198,6 +210,7 @@ export default {
         this.friendLoad = res.data.To
         this.from_seen = res.data.from_seen
         this.to_seen = res.data.to_seen
+        this.hasConvChange()
       } else if (res.data.status === 0) {
         this.conversation = []
         this.friendLoad = res.data.To

@@ -65,7 +65,7 @@ export default {
     settingMenu: false,
     currentSmiley: '🙂',
     // prod:
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000'
   }),
   methods: {
     // go to friend conversation on selection

@@ -123,7 +123,9 @@
               </audio>
             </div>
             <!-- big smiley -->
-            <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">{{ mess.content }}</div>
+            <div v-else-if="mess.type === 'smiley'" :class="mess.sender === user ? 'ml-auto' : 'mr-auto'" style="font-size: 3em">
+              {{ mess.content }}
+            </div>
           </v-scroll-y-transition>
           <!-- </v-badge> -->
 

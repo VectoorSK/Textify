@@ -94,7 +94,7 @@ export default {
     dialogDel: false,
     userDelConfirm: '',
     // prod
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000'
   }),
   methods: {
     // open conversation with 'username'

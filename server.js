@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const session = require('express-session')
 const path = require('path')
+const waitUntil = require('wait-until')
 
 const app = express()
 
@@ -710,6 +711,28 @@ app.get('/api/logout', (req, res) => {
     res.res({
       message: 'You are already disconnected'
     })
+  }
+})
+
+app.post('/api/updateConv', (req, res) => {
+  const user1 = req.body.username
+  const user2 = req.body.friend
+  const curLength = req.body.length
+
+  const conv = conversations.find(c => (c.from === user1 && c.to === user2) || (c.from === user2 && c.to === user1))
+
+  if (conv) {
+    waitUntil()
+      .interval(100)
+      .times(Infinity)
+      .condition(function () {
+        return (conv.content.length !== curLength)
+      })
+      .done(function (result) {
+        res.json({
+          status: 200
+        })
+      })
   }
 })
 

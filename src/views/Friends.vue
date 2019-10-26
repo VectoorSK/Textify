@@ -67,7 +67,7 @@ export default {
     snackbar: false,
     snackbarText: '',
     // prod
-    url: '' // 'http://localhost:4000'
+    url: 'http://localhost:4000'
   }),
   mounted: function () {
     if (!this.$session.exists()) {
